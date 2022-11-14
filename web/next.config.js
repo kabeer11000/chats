@@ -27,7 +27,7 @@ module.exports = ({
 
         "NODE_ENV": "production",
         // CHATS_NODE_ENV: "development",
-        SELF_HOST_ADDRESS: [...(require('os').networkInterfaces()['en0'])].find(({family}) => family.toLowerCase() === 'ipv4')['address']
+        SELF_HOST_ADDRESS: ''//[...(require('os').networkInterfaces()['en0'])].find(({family}) => family.toLowerCase() === 'ipv4')['address']
     }
     // Customize the server side manifest.
     // assetsManifestServer: {
