@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "_build": "next build",
-    "build": "node ./generate-asset-manifest.js",
+    "build": "next build",
+    "_build": "node ./generate-asset-manifest.js",
     "export": "next export",
     "start": "next start"
   },
