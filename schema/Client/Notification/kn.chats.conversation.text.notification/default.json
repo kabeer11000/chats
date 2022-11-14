@@ -1,0 +1,17 @@
+{
+  "type": "kn.chats.conversation.text.notification",
+  "payload": {
+    "user": {
+      "name": "String",
+      "photo": "String",
+      "id": "String"
+    },
+    "chat": {
+      "id": "String",
+      "url": "String"
+    },
+    "data": {
+      "message": "String"
+    }
+  }
+}

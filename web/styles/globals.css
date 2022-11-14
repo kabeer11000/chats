@@ -1,0 +1,72 @@
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+  /*transform: scale(0.5);*/
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+html,
+body {
+  /*height: 100vh;*/
+  /*width: 100%;*/
+  /*overflow: auto;*/
+
+  /* Disables pull-to-refresh and overscroll glow effect.
+     Still keeps swipe navigations. */
+  overscroll-behavior-y: none;
+
+  /* Disables pull-to-refresh but allows overscroll glow effects. */
+  /*overscroll-behavior-y: contain;*/
+
+}
+
+.messages-container {
+  overflow-y: scroll;
+  scroll-snap-type: y proximity; /* mandatory */
+}
+.d-block {
+  display: block!important;
+}
+.messages-container > p {
+  scroll-snap-align: end;
+}
+
+
+
+.container {
+  overflow-y: scroll;
+  overscroll-behavior-y: contain;
+  scroll-snap-type: y proximity;
+}
+
+.container > .msg-c > div:last-child {
+  scroll-snap-align: end;
+}
+
+.scrollable-div {
+  max-height: inherit;
+  height: inherit;
+  overflow-y: auto;
+}
+

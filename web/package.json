@@ -1,0 +1,58 @@
+{
+  "name": "kabeerchats-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "_build": "next build",
+    "build": "node ./generate-asset-manifest.js",
+    "export": "next export",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.10.0",
+    "@emotion/styled": "^11.10.0",
+    "@material/material-color-utilities": "^0.1.2",
+    "@mui/icons-material": "^5.8.4",
+    "@mui/material": "^5.10.5",
+    "email-validator": "^2.0.4",
+    "eslint-config-next": "^13.0.0",
+    "firebase": "8.7.1",
+    "material-dynamic-colors": "^0.0.10",
+    "moment": "^2.29.1",
+    "mui-audio-player-plus": "^1.0.2",
+    "next": "^13.0.0",
+    "next-plugin-preact": "^3.0.7",
+    "nextjs-progressbar": "^0.0.14",
+    "peerjs": "^1.4.7",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-draggable": "^4.4.5",
+    "react-dropzone": "^14.2.2",
+    "react-firebase-hooks": "^3.0.4",
+    "react-infinite-scroller": "^1.2.6",
+    "react-linkify": "^1.0.0-alpha",
+    "react-qr-code": "^2.0.7",
+    "react-qr-scanner": "^1.0.0-alpha.10",
+    "react-ssr-prepass": "^1.5.0",
+    "react-virtuoso": "^2.19.1",
+    "recoil": "^0.7.6",
+    "timeago-react": "^3.0.3",
+    "uuid": "^9.0.0",
+    "wavesurfer-react": "^2.2.2",
+    "wavesurfer.js": "^6.2.0"
+  },
+  "unusedPackages": [
+    "next-plugin-preact",
+    "framer-motion",
+    "wavesurfer.js",
+    "web-push",
+    "preact",
+    "preact-render-to-string"
+  ],
+  "devDependencies": {
+    "@sendgrid/mail": "^7.7.0",
+    "@types/uuid": "^8.3.4",
+    "typescript": "^4.8.3"
+  }
+}

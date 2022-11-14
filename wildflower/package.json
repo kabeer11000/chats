@@ -1,0 +1,19 @@
+{
+  "name": "wildflower",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon source/index.ts",
+    "start": "node build/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mediasoup": "^3.10.12",
+    "undici": "^5.12.0",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}

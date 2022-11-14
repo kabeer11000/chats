@@ -1,0 +1,10 @@
+{
+  "name": "chats-native",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@capacitor/android": "^4.3.0",
+    "@capacitor/core": "^4.3.0"
+  }
+}

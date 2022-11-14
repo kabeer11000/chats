@@ -1,0 +1,6 @@
+[submodule "native/--branch"]
+	path = native/--branch
+	url = https://github.com/kabeer11000/kabeer-chats.git
+[submodule "native/source-web"]
+	path = native/source-web
+	url = https://github.com/kabeer11000/kabeer-chats.git

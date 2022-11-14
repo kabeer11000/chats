@@ -1,0 +1,14 @@
+{
+  "emulators": {
+    "firestore": {
+      "port": "4001",
+      "enabled": true,
+      "host": "0.0.0.0 localhost asadrizvi.local"
+    },
+    "ui": {
+      "project_id": "kabeer-chats",
+      "enabled": true,
+      "port": 4000
+    }
+  }
+}
