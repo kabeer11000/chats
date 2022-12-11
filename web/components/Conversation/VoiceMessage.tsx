@@ -2,7 +2,7 @@
 import dynamic from "next/dynamic";
 import {memo} from "react";
 // @ts-ignore
-const MuiAudioPlayer = dynamic(() => import("mui-audio-player-plus"), {
+const MuiAudioPlayer = dynamic(() => import("@kabeersnetwork/mui-audio-player-plus"), {
     ssr: false // TODO
 })
 export const VoiceMessage = ({url, paper,noMargin, width}) => {
