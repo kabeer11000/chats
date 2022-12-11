@@ -25,7 +25,7 @@ module.exports = ({
         // CHATS_NODE_ENV: "production",
         BUILD_TYPE: "web",
 
-        "NODE_ENV": "production",
+        // "NODE_ENV": "production",
         // CHATS_NODE_ENV: "development",
         SELF_HOST_ADDRESS: ''//[...(require('os').networkInterfaces()['en0'])].find(({family}) => family.toLowerCase() === 'ipv4')['address']
     }
