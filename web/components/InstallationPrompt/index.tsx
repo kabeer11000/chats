@@ -55,7 +55,7 @@ export default function InstallPrompt() {
                 <ul style={{listStyle: 'none'}}>
                     <li>INSTALLED: {"" + installed}</li>
                     {Object.entries(capabilities.available).map(([key, value]) => (
-                        <li>{key.replaceAll('_', ' ')}: {"" + value}</li>))}
+                        <li key={Math.random()}>{key.replaceAll('_', ' ')}: {"" + value}</li>))}
                 </ul>
             </Paper>
         </div>

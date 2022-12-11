@@ -2,7 +2,6 @@
 import {ThemeOptions} from "@mui/material/styles";
 // @ts-ignore
 import {alpha, darken, lighten, PaletteColor, Theme} from '@mui/material';
-
 interface M3Tone {
     0: string,
     10: string,

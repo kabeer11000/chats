@@ -1,12 +1,8 @@
-import {db} from "firebase-config";
-import {useRouter} from "next/router";
-import {useEffect} from "react";
-export default function Call() {
-    const {id, room} = useRouter().query;
-    useEffect(() => {
+import dynamic from "next/dynamic";
 
-    }, []);
-    return (
-        <div>Ka</div>
-    );
-};
+const Call = dynamic(() => import('@/components/Call'), {
+    ssr: false
+});
+export default function CallScreen() {
+    return (<Call/>)
+}

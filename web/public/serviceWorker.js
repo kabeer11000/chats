@@ -1,5 +1,5 @@
 /** Kabeer's Network Authors, chats-serviceworker v 2.4.0:1 **/
-const isLocalhost = self.location.host.split(":")[0] === "localhost";
+const isLocalhost = true // self.location.host.split(":")[0] === "localhost";
 importScripts("/binaries/svg2png-wasm@1.3.4/dist/index.min.js");
 const NotificationTypes = {
     "Conversation.Message": "kn.chats.conversation.text.notification",
@@ -13,7 +13,7 @@ const assetManifest = {
     "cache": {
         "version": "2.4.0",
         "key": "kn.chats.webcache." + "2.4.0:2",
-        "files": ["https://cdn.glitch.global/77b4c993-589e-4e39-8500-f03fc9765209/5c2f93a6-9329-426a-806b-587ddcf6a517.notification-badge.png?v=1663437251523", "/images/icon-512-maskable.png", "/images/icon-512.png", "/favicon.ico", "/images/broken-image.jpeg", "/_offline", "/binaries/svg2png_wasm_bg.wasm", "/binaries/svg2png-wasm@1.3.4/dist/index.min.js"]
+        "files": ["/files/call_tune.mp3", "https://cdn.glitch.global/77b4c993-589e-4e39-8500-f03fc9765209/5c2f93a6-9329-426a-806b-587ddcf6a517.notification-badge.png?v=1663437251523", "/images/icon-512-maskable.png", "/images/icon-512.png", "/favicon.ico", "/images/broken-image.jpeg", "/_offline", "/binaries/svg2png_wasm_bg.wasm", "/binaries/svg2png-wasm@1.3.4/dist/index.min.js"]
     }
 };
 self.addEventListener("install", async function (event) {
@@ -69,10 +69,7 @@ self.addEventListener("fetch", (e) => {
         return response;
     }
     if (url.host === self.location.host && url.pathname === "/internal-sw-version-info") return e.respondWith(new Response(JSON.stringify(assetManifest)));
-    if (url.host === self.location.host && url.pathname === "/internal-sw-delete-cache") return e.respondWith(async () => {
-        await caches.delete(assetManifest.cache.key);
-        return new Response("complete");
-    });
+    if (url.host === self.location.host && url.pathname === "/internal-sw-delete-cache") return e.respondWith(caches.delete(assetManifest.cache.key).then(() => new Response("complete")));
     if (!isLocalhost && allowedDomains.includes(url.host) && !(["cors"].includes(e.request.mode)) && (e.request.method === "GET")) {
         Log("[Request Interceptor]: Intercepted Request");
         e.respondWith(intercept());
@@ -219,10 +216,17 @@ const ActionHandler = async (action) => {
  * }
  */
 const CallHandler = async (notification) => {
-    const {user, chat, data} = notification?.payload ?? {};
+    const {payload: {user, chat}, ...data} = notification;
+    Log('Call notification received');
     // const metadata
     try {
-        if (data.openWindowSupport.open) await self.clients.openWindow(data.openWindowSupport.url);
+        if (data.openWindowSupport.open && self.clients.openWindow) await self.clients.openWindow(data.openWindowSupport.url);
+        else {
+            const availabeClients = await self.clients.matchAll({type: 'window', includeUncontrolled: true});
+            const focusedClient = availabeClients.find(({focused, visibilityState}) => (focused || visibilityState));
+            console.log(availabeClients)
+            if (focusedClient) await focusedClient.navigate(data.openWindowSupport.url)
+        }
     } catch (e) {
         Log("[Call Manager]: cannot open window: ", e);
     }
@@ -233,7 +237,7 @@ const CallHandler = async (notification) => {
             // Don't mess with the badge
             badge: "https://cdn.glitch.global/77b4c993-589e-4e39-8500-f03fc9765209/5c2f93a6-9329-426a-806b-587ddcf6a517.notification-badge.png?v=1663437251523", // badge
             tag: data.notification.tag,
-            requireInteraction: true
+            requireInteraction: true, silent: false, data: {type: data.type, url: data.openWindowSupport.url}
         });
 }
 self.addEventListener("push", async e => {
@@ -259,6 +263,11 @@ self.addEventListener("push", async e => {
     }
 });
 self.addEventListener('notificationclick', async function (event) {
+    console.log(event)
+    if (event.notification.data.type === NotificationTypes["Conversation.Call"]) {
+        await self.clients.openWindow(event.notification.data.url);
+        return event.notification.close()
+    }
     switch (event.action.split("$")[0]) {
         case 'open_url':
             await self.clients.openWindow(event.action.split("$").pop()); //which we got from above

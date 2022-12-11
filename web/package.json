@@ -10,6 +10,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@builder.io/partytown": "^0.7.3",
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
     "@material/material-color-utilities": "^0.1.2",
@@ -18,6 +19,7 @@
     "email-validator": "^2.0.4",
     "eslint-config-next": "^13.0.0",
     "firebase": "8.7.1",
+    "framer-motion": "^7.6.19",
     "material-dynamic-colors": "^0.0.10",
     "moment": "^2.29.1",
     "mui-audio-player-plus": "^1.0.2",

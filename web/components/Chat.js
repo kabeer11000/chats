@@ -1,12 +1,12 @@
 import {Fragment, memo} from "react";
 import {useAuthState} from 'react-firebase-hooks/auth';
-import {auth, db} from '../firebaseconfig';
+import {auth, db} from 'firebase-config';
 import {useCollection, useCollectionData} from 'react-firebase-hooks/firestore';
 import {useRouter} from 'next/router';
 
 import styled from "@mui/material/styles/styled";
 import dynamic from "next/dynamic";
-
+const RingVolume = dynamic(() => import("@mui/icons-material/RingVolume"))
 const Avatar = dynamic(() => import("@mui/material/Avatar"))
 const IconButton = dynamic(() => import("@mui/material/IconButton"))
 const ListItem = dynamic(() => import("@mui/material/ListItem"))
@@ -42,8 +42,8 @@ const Chat = ({id, expanded, openChat: _openChat, data}) => {
     );
     const lastMessageData = messagesSnapshot?.docs?.[0]?.data?.()
     return (
-        <ListItem disablePadding={expanded} onClick={openChat}>
-            <ListItemButton selected={router.query.id === id}>
+        <ListItem disablePadding={expanded}>
+            <ListItemButton style={{width: '100%'}} onClick={openChat} selected={router.query.id === id}>
                 <ListItemAvatar>
                     {recipientSnapshot?.length ? <>
                         <Badge
@@ -60,9 +60,26 @@ const Chat = ({id, expanded, openChat: _openChat, data}) => {
                     </> : <Avatar/>}
                 </ListItemAvatar>
                 <ListItemText
-                    primary={<div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>{recipientEmails.length > 1 ? `${data?.name ?? recipientEmails.join(", ")}` : recipientEmails[0]}</div>}
+                    style={{width: '100%'}}
+                    primary={<div style={{
+                        whiteSpace: "nowrap",
+                        width: '100%',
+                        overflow: "hidden",
+                        textOverflow: "ellipsis"
+                    }}>{recipientEmails.length > 1 ? `${data?.name ?? recipientEmails.join(", ")}` : recipientEmails[0]}</div>}
                     secondary={
-                        <div style={{direction: "rtl", textAlign: "left", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}><strong style={{wordWrap: "no-wrap", whiteSpace: "nowrap", textOverflow: "ellipsis", overflowX: "hidden"}}>{(lastMessageData?.message?.length ? lastMessageData?.message : null) ?? (lastMessageData?.files?.length ? "Sent an attachment" : "new message(s)")}</strong> - {" "}
+                        <div style={{
+                            direction: "rtl",
+                            textAlign: "left",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis"
+                        }}><strong style={{
+                            wordWrap: "no-wrap",
+                            whiteSpace: "nowrap",
+                            textOverflow: "ellipsis",
+                            overflowX: "hidden"
+                        }}>{(lastMessageData?.message?.length ? lastMessageData?.message : null) ?? (lastMessageData?.files?.length ? "Sent an attachment" : null) ?? 'Chat Created'}</strong> - {" "}
                             {recipientSnapshot?.length > 1 ? <Fragment>
                                 {data.lastSent?.toDate() ? (
                                     <TimeAgo datetime={data?.lastSent?.toDate()}/>
@@ -76,12 +93,10 @@ const Chat = ({id, expanded, openChat: _openChat, data}) => {
                                     'Unavailable'
                                 )}
                             </Fragment>}</div>}/>
-                <ListItemSecondaryAction hidden>
-                    <IconButton>
-                        <Delete/>
-                    </IconButton>
-                </ListItemSecondaryAction>
             </ListItemButton>
+            <div style={{paddingRight: '0.5rem'}}>
+                {data?.call && <IconButton variant={"contained"}><RingVolume/></IconButton>}
+            </div>
         </ListItem>
     )
 };

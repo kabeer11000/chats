@@ -35,7 +35,7 @@ const db = app.firestore();
 console.log("env: ", (process.env.CHATS_NODE_ENV ?? process.env.NEXT_RUNTIME["CHATS_NODE_ENV"]));
 // if ((process.env.CHATS_NODE_ENV ?? process.env.NEXT_RUNTIME?.CHATS_NODE_ENV) === "development") db.useEmulator("192.168.40.50", 4001);
 
-// db.useEmulator(process.env.SELF_HOST_ADDRESS, 4001);
+db.useEmulator(process?.env?.SELF_HOST_ADDRESS || "192.168.40.50", 4001);
 db.settings({cacheSizeBytes: 5e+7, merge: true});
 const auth = app.auth();
 
@@ -45,9 +45,10 @@ const analytics = firebase.analytics;
 // }
 const provider = new firebase.auth.GoogleAuthProvider();
 const githubProvider = new firebase.auth.GithubAuthProvider();
+const facebookProvider = new firebase.auth.FacebookAuthProvider();
 provider.setCustomParameters({
     prompt: 'select_account',
 });
 
 
-export {db, auth, provider, analytics, githubProvider};
+export {db, auth, provider, analytics, githubProvider, facebookProvider};

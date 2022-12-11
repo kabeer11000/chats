@@ -21,7 +21,10 @@
     "paths": {
       "@/components/*": ["components/*"],
       "@/utils/*": ["utils/*"],
-      "firebase-config": ["firebaseconfig.js"]
+      "@/rtc/*": ["rtc/*"],
+      "@/styles/*": ["styles/*"],
+      "firebase-config": ["firebaseconfig.js"],
+      "root-contexts": ["Contexts.js"]
     }
   },
   "include": [

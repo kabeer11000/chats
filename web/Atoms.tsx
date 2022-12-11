@@ -7,4 +7,4 @@ export const InstallPromptAtom = atom({
         event: null,
         open: false,
     }
-})
+});

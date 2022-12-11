@@ -5,6 +5,9 @@ import {analytics} from "firebase-config";
 import Skeleton from "@mui/material/Skeleton";
 import dynamic from "next/dynamic";
 import {useRouter} from "next/router";
+import {Empty} from "@/components/Empty";
+import {Feedback} from "@mui/icons-material";
+import {Avatar, CircularProgress} from "@mui/material";
 
 const Header = dynamic(() => import("../components/Header"))
 const Box = dynamic(() => import("@mui/material/Box"))
@@ -39,33 +42,59 @@ export default function Home() {
                 <title>Chats</title>
             </Head>
             <div
-                style={{marginLeft: type === "permanent" ? drawerWidth : 0}}>
+                style={{marginLeft: type === "permanent" ? drawerWidth : 0, display: 'flex', flexDirection: "column", flex: 1, flexGrow: 1}}>
                 <Header/>
-                {isDesktop ? <div style={{
-                    display: "flex", justifyContent: "center", alignItems: "center", height: "calc(100vh - 4.5rem)"
-                }}>
-                    <img src={"/images/icon-512.png"}
-                         style={{width: "100%", maxWidth: "10rem", height: "auto", opacity: "50%"}} alt={"logo"}/>
-                </div> : (
-                    <List>
-                        {!chats.loading && chats.data?.length ?
-                            <ChatList expanded={true} chatsSnapshot={chats.data}/> : chatSnapshotLoading ? null : (
-                                <div style={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    height: "calc(100vh - 4.5rem)"
-                                }}>
-                                    <img src={"/images/icon-512.png"}
-                                         style={{width: "100%", maxWidth: "10rem", height: "auto", opacity: "50%"}}
-                                         alt={"logo"}/>
-                                </div>
-                            )}
-                    </List>
+                {!chats.loading && (
+                    <Fragment>
+                        {isDesktop && (
+                            chats.data?.length ? <Empty variant={{
+                                title: 'Welcome to Chats',
+                                icon: () => <Avatar
+                                                    src={"/images/icon-192.png"}/>,
+                                description: 'Conversations will open here',
+                                actions: [],
+                            }}/> : <Empty variant={{
+                                title: 'Chats you create will appear here',
+                                icon: Feedback,
+                                description: 'You currently have no chats. Create a new chat and it will appear here',
+                                actions: [{
+                                    title: 'Create Chat', onClick: async () => {
+                                        const ref = await createChat();
+                                        if (!ref) return; // user cancelled
+                                        await router.push("/chat/" + ref.id)
+                                    }
+                                }],
+                            }}/>
+                        )}
+                        {!isDesktop && (
+                            chats.data?.length ? <List><ChatList expanded={true} chatsSnapshot={chats.data}/></List> : <Empty variant={{
+                                title: 'Chats you create will appear here',
+                                icon: Feedback,
+                                description: 'You currently have no chats. Create a new chat and it will appear here',
+                                actions: [{
+                                    title: 'Create Chat', onClick: async () => {
+                                        const ref = await createChat();
+                                        if (!ref) return; // user cancelled
+                                        await router.push("/chat/" + ref.id)
+                                    }
+                                }],
+                            }}/>
+                        )}
+                    </Fragment>
                 )}
+                {chats.loading && <div style={{
+                    display: "flex",
+                    height: '100%',
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flex: 1,
+                }}>
+                    <CircularProgress/>
+                </div>}
             </div>
             <div style={{position: "fixed", bottom: "2rem", right: "1rem"}}>
-                <Zoom in={isDesktop ? true : !mobileOpen}>
+                <Zoom in={(isDesktop ? true : !mobileOpen) && (!chatSnapshotLoading && chats)}>
                     <div>
                         <SpeedDial icon={<Add/>} color="tertiary" ariaLabel={"Create"}>
                             <SpeedDialAction

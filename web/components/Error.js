@@ -4,7 +4,7 @@ import {Container, ListItemText} from "@mui/material";
 import {OfflineBolt} from "@mui/icons-material";
 import Button from "@mui/material/Button";
 
-export default function ErrorPage() {
+export default function ErrorPage({type} = {type: 'application-error'}) {
     const {isDesktop, drawerWidth} = useContext(DrawerContext);
     return <div
         style={{marginLeft: isDesktop ? drawerWidth : 0, width: isDesktop ? `calc(100% - ${drawerWidth}px` : "100%"}}>

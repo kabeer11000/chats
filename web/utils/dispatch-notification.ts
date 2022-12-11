@@ -103,8 +103,26 @@ export class Notification {
                         "id": this.config.user.id
                     },
                     "chat": {"id": this.config.chat.id, "url": this.config.chat.url},
-                    session: {id: this.config?.call.session,}
+                    session: {id: this.config.call.session}
+                },
+                "notification": {
+                    "title": `${this.config.user.name} Incoming Call`,
+                    "body": "",
+                    "tag": `${this.config.chat.id}/${this.config.call.session}`
+                },
+                "openWindowSupport": {
+                    "open": false, // TODO
+                    "url": `${window.location.protocol}//${window.location.host}/chat/${this.config.chat.id}/call/${this.config.call.session}`,
+                    "parameters": {
+                        "ui": "v1"
+                    }
+                },
+                "provider": {
+                    "url": this.PushV2Server,
+                    "version": "kn.chats.notification.service.v2",
+                    "key": "kn.string.v2"
                 }
+
             })
         });
         return response.ok;

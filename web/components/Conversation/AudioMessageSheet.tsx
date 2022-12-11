@@ -1,7 +1,7 @@
 import {memo, useCallback, useContext, useEffect, useState} from "react";
 // @ts-ignore
 import dynamic from "next/dynamic";
-import {getAudioContext} from "../../utils/audio";
+import {getAudioContext} from "@/utils/audio";
 import {InputContext} from "./Context";
 import {useTheme} from "@mui/material/styles";
 // @ts-ignore
@@ -120,22 +120,27 @@ export const AudioMessageSheet = () => {
                 </CircularProgress>
             </Backdrop>
             <Drawer variant={"temporary"} onClose={async () => {
-                if ((mediaRecorder && mediaRecorder.state === ("recording" || "active"))) return mediaRecorder.stop();
-                if (!audioBlob) return voiceMessage.toggleSheet();
-                setSaving(true);
-                voiceMessage.toggleSheet();
-                const formData = new FormData();
-                const file = new File([audioBlob], "audio.webm", {
-                    type: "audio/webm"
-                })
-                formData.append("file", file, file.name);
-                const res = await fetch("https://kabeers-papers-pdf2image.000webhostapp.com/kabeer-chats-storage/upload.php?branch=vms-emulated", {
-                    method: 'POST',
-                    body: formData,
-                    redirect: 'follow'
-                }).then(r => r.json());
-                setFiles([...files, {url: res.file.url, type: "kn.chats.AUDIO"}]);
-                setSaving(false);
+                try {
+                    if ((mediaRecorder && mediaRecorder.state === ("recording" || "active"))) return mediaRecorder.stop();
+                    if (!audioBlob) return voiceMessage.toggleSheet();
+                    setSaving(true);
+                    voiceMessage.toggleSheet();
+                    const formData = new FormData();
+                    const file = new File([audioBlob], "audio.webm", {
+                        type: "audio/webm"
+                    })
+                    formData.append("file", file, file.name);
+                    const res = await fetch("https://kabeers-papers-pdf2image.000webhostapp.com/kabeer-chats-storage/upload.php?branch=vms-emulated", {
+                        method: 'POST',
+                        body: formData,
+                        redirect: 'follow'
+                    }).then(r => r.json());
+                    setFiles([...files, {url: res.file.url, type: "kn.chats.AUDIO"}]);
+                    setSaving(false);
+                } catch (e) {
+                    setSaving(false);
+                    alert("An error occurred uploading audio");
+                }
             }} open={voiceMessage.sheetOpen} anchor={"bottom"} PaperProps={{
                 style: {
                     alignSelf: "center",

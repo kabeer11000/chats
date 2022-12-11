@@ -15,7 +15,7 @@ export const DrawerContext = createContext({
 });
 export const DrawerProvider = ({children}) => {
     const [drawerWidth, setDrawerWidth] = useState(340)
-    const matches = useMediaQuery('(min-width:600px)');
+    const matches = useMediaQuery('(min-width:700px)');
     const [state, setState] = useState({
         mobileOpen: false,
     });
@@ -55,8 +55,8 @@ export const ChatProvider = ({children}) => {
     const [user] = useAuthState(auth);
     const [_chatsSnapshot, _chatSnapshotLoading] = useCollectionData((user) ? db.collection('chats').where('users', 'array-contains', user.email).withConverter(converter) : null)
     // const [chatsSnapshot, chatSnapshotLoading] = useCollection((user) ? db.collection('chats').where('users', 'array-contains', user.email) : null);
-    const isExistingChat = (recipient) => !!_chatsSnapshot.filter(chat => (chat.users.includes(recipient) && (chat.users.filter(user => user !== user.email) === 1))).length;
-    const isExistingGroupChat = (recipients) => !!_chatsSnapshot.find(({users}) => {
+    const isExistingChat = (recipient) => !!_chatsSnapshot?.filter(chat => (chat.users.includes(recipient) && (chat.users.filter(user => user !== user.email) === 1))).length;
+    const isExistingGroupChat = (recipients) => !!_chatsSnapshot?.find(({users}) => {
         console.log(arraysEqual(users, [...recipients, user.email]), users, [...recipients, user.email])
         return arraysEqual(users, [...recipients, user.email]);
     });

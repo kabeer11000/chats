@@ -1,11 +1,13 @@
 // @ts-ignore
 import dynamic from "next/dynamic";
 import {useContext} from "react";
-import {DrawerContext} from "../../../Contexts";
+import {DrawerContext} from "root-contexts";
 // @ts-ignore
 import {useRouter} from "next/router";
-import {db} from "../../../firebaseconfig";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
+import Options from "@/components/Conversation/Options";
+import {InputProvider, RootProvider} from "@/components/Conversation/Context";
+import Head from "next/head";
 // @ts-ignore
 const AppBar = dynamic(() => import("@mui/material/AppBar"));
 // @ts-ignore
@@ -26,9 +28,10 @@ const ListItem = dynamic(() => import("@mui/material/ListItem"));
 const ListItemText = dynamic(() => import("@mui/material/ListItemText"));
 // @ts-ignore
 const ListItemIcon = dynamic(() => import("@mui/material/ListItemIcon"));
-export default function Options({}) {
+export default function OptionsPage({}) {
     // @ts-ignore
     const {drawerWidth, isDesktop} = useContext(DrawerContext);
+    if (isDesktop) return
     const router = useRouter();
     const trigger = useScrollTrigger({
         disableHysteresis: true,
@@ -36,29 +39,30 @@ export default function Options({}) {
         target: window ? window : undefined,
     });
     return (
-        <div style={{width: isDesktop ? `calc(100% - ${drawerWidth}px)` : "100%", marginLeft: isDesktop ? drawerWidth : 0}}>
-            <AppBar color={trigger ? 'primary' : 'default'} position="fixed" style={{width: isDesktop ? `calc(100% - ${drawerWidth}px)` : "100%", marginLeft: isDesktop ? drawerWidth : 0}} elevation={trigger ? 2 : 0}>
+        <div style={{
+            width: isDesktop ? `calc(100% - ${drawerWidth}px)` : "100%",
+            marginLeft: isDesktop ? drawerWidth : 0
+        }}>
+            <Head>
+                <title>Conversation Options - Chats</title>
+            </Head>
+            <AppBar color={trigger ? 'primary' : 'default'} position="fixed" style={{
+                width: isDesktop ? `calc(100% - ${drawerWidth}px)` : "100%",
+                marginLeft: isDesktop ? drawerWidth : 0
+            }} elevation={trigger ? 2 : 0}>
                 <Toolbar>
                     <IconButton color={'inherit'} onClick={() => router.back()} style={{marginRight: "1rem"}}>
                         <ArrowBack/>
                     </IconButton>
-                    <Typography variant={"h6"}>Chat Options</Typography>
+                    <Typography variant={"body1"}>Conversation Options</Typography>
                 </Toolbar>
             </AppBar>
             <div style={{marginTop: "4rem"}}>
-                <List>
-                    <ListItem button onClick={async () => {
-                        const sure = prompt("Are you sure you want to delete this chat? type in \"yes\" to confirm (you cannot undo this action)");
-                        if (sure !== "yes") return;
-                        await db.collection("chats").doc(router.query.id).delete();
-                        await router.push("/");
-                    }}>
-                        <ListItemIcon color={'inherit'}>
-                            <Delete/>
-                        </ListItemIcon>
-                        <ListItemText primary={"Delete Chat"}/>
-                    </ListItem>
-                </List>
+                <InputProvider>
+                    <RootProvider>
+                        <Options embedded={true}/>
+                    </RootProvider>
+                </InputProvider>
             </div>
         </div>
     )

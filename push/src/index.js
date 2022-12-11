@@ -31,6 +31,33 @@ app.post("/send-notification", async (req, res) => {
         res.status(500).json({status: false});
     }
 });
+app.post("/v2/call/dispatch", async (req, res) => {
+    try {
+        const {subscriptions, ...data} = req.body;
+        const response = [];
+        // console.log(data);
+        // return res.json({});
+        for (const sub of [...new Set(subscriptions)].reverse()) {
+            await webpush.sendNotification(sub, JSON.stringify({
+                ...data, type: "kn.chats.conversation.call.notification"
+            }))
+                .catch(err => {
+                    console.log({e: err.body})
+                    response.push({pushed: false, e: err.body});
+                })
+                .then((a) => {
+                    console.log("sent notification", a?.statusCode, a?.body);
+                    response.push({pushed: !!a})
+                });
+        }
+        res.status(200).json({status: true, responses: response});
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({status: false});
+    }
+});
+
+
 // "kn.chats.conversation.text.notification"
 // "kn.chats.conversation.call.notification"
 // "kn.chats.general.notification"

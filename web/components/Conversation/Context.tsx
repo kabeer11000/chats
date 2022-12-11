@@ -17,9 +17,9 @@ import {useAuthState} from "react-firebase-hooks/auth";
 // @ts-ignore
 import {compressImage} from "@/utils/compression/image";
 
-import {Notification, SendNotification} from "@/utils/dispatch-notification";
-import firestore = firebase.firestore;
+import {Notification} from "@/utils/dispatch-notification";
 import {v4} from "uuid";
+import firestore = firebase.firestore;
 
 const fileTypeResolver = (mime: string) => {
     switch (mime.split("/")[0]) {
@@ -75,7 +75,7 @@ export const RootProvider = (({children}) => {
     const router = useRouter();
     const [loadedMessages, setLoadedMessages] = useState(loadMessageLength);
     const [user] = useAuthState(auth);
-    const [chat, chatLoading] = useDocumentData(db.collection("chats").doc(router.query.id)); //
+    const [chat, chatLoading] = useDocumentData(router.isReady ? db.collection("chats").doc(router.query.id).withConverter(converter) : null); //
     const [messages, messagesLoading] = useCollectionData(chat ? db.collection("chats").doc(router.query.id).collection("messages").orderBy("timestamp", "asc").limitToLast(loadedMessages).withConverter(converter) : undefined); //
     const [members, membersLoading] = useCollectionData(chat ? db.collection("users").where("email", "in", chat.users).withConverter(converter) : null); //
     const {setFiles, text, setText, files} = useContext(InputContext);
@@ -125,8 +125,12 @@ export const RootProvider = (({children}) => {
             if (navigator.onLine) {
                 console.log(subscriptions)
                 const notif = new Notification("kn.chats.conversation.text.notification", {
-                    data: {message: text, previewImage: files.find(({type}) => type === "kn.chats.IMAGE")?.url}, user: {id: user.uid, name: user.displayName, photo: user.photoURL},
-                    chat: {id: router.query.id.toString(), url: `https://chats.kabeersnetwork.tk/chat/${router.query.id.toString()}`}
+                    data: {message: text, previewImage: files.find(({type}) => type === "kn.chats.IMAGE")?.url},
+                    user: {id: user.uid, name: user.displayName, photo: user.photoURL},
+                    chat: {
+                        id: router.query.id.toString(),
+                        url: `https://chats.kabeersnetwork.tk/chat/${router.query.id.toString()}`
+                    }
                 });
                 await notif.dispatch(subscriptions).catch(() => {
                     console.log("error sending notifications");
@@ -221,7 +225,26 @@ export const CallProvider = ({children}) => {
         }
         await db.collection("chats").doc(router.query.id).set({call: callObject}, {merge: true});
         setState({calling: true, call: callObject});
-        await router.push(`/chat/${router.query.id}/call/${callObject.id}/?ui=v1`);
+        const windowId = v4();
+        const uri = `/chat/${router.query.id}/call/${callObject.id}/?ui=v1&window=${windowId}`;
+        const notif = new Notification("kn.chats.conversation.call.notification", {
+            user: {
+                name: user.email,
+                photo: user.photoURL,
+                id: user.uid
+            },
+            call: {
+                session: callObject.id
+            },
+            chat: {
+                id: router.query.id.toString(),
+                url: `https://chats.kabeersnetwork.tk/chat/${router.query.id}`
+            },
+        });
+        notif.dispatch(subscriptions.data).catch(); // leave the promise hanging
+        if (window.navigator.userAgent.match(/iPad/i) || window.navigator.userAgent.match(/iPhone/i)) return router.push(uri);
+        else window.open(uri, 'pop', `title=On Call,scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=440,height=900`);
+        // await router.push(`/chat/${router.query.id}/call/${callObject.id}/?ui=v1`);
     }
     return (
         <CallContext.Provider value={{

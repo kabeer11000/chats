@@ -1,10 +1,12 @@
 import {Fragment, memo, useContext, useEffect, useState} from 'react';
 import {ChatContext, DrawerContext} from "../Contexts";
 import {useRouter} from "next/router";
-import {auth} from "../firebaseconfig";
+import {auth} from "firebase-config";
 import useTheme from "@mui/material/styles/useTheme"
 import dynamic from "next/dynamic";
 import {ThemeSchemeContext} from "../styles/theme";
+import {Code, Logout, Settings} from "@mui/icons-material";
+import {ListItemSecondaryAction} from "@mui/material";
 
 const ChatList = dynamic(() => import("./ChatList"))
 const Version = dynamic(() => import("./Version").then(({Version}) => Version))
@@ -54,7 +56,7 @@ function ResponsiveDrawer() {
     const drawer = (
         <div onClick={toggle}>
             <List>
-                <ListItem onClick={() => router.push("/login")}>
+                <ListItem onClick={() => router.push("/account")}>
                     <ListItemButton>
                         <ListItemIcon>
                             <People/>
@@ -62,10 +64,13 @@ function ResponsiveDrawer() {
                         <ListItemText primary={"Switch Account"} secondary={"Switch to another account"}/>
                     </ListItemButton>
                 </ListItem>
-                <ListItem>
+                <ListItem style={{display: 'flex'}}>
                     <ListItemButton>
                         <ListItemIcon>
-                            <Badge><Avatar imgProps={{referrerPolicy: "no-referrer"}} src={auth.currentUser.photoURL}/></Badge>
+                            <Badge>
+                                <Avatar imgProps={{referrerPolicy: "no-referrer"}}
+                                        src={auth.currentUser.photoURL}/>
+                            </Badge>
                         </ListItemIcon>
                         <ListItemText primary={auth.currentUser.displayName}
                                       secondary={<div style={{
@@ -76,6 +81,12 @@ function ResponsiveDrawer() {
                                           textOverflow: "ellipsis"
                                       }}>Signed in as {auth.currentUser.email}</div>}/>
                     </ListItemButton>
+                    <div>
+                        <IconButton onClick={async () => {
+                            const reply = prompt('Sign Out?\nSigning out will remove your account and all associated data with this device, type yes to continue...');
+                            if (reply && reply.toString().toLowerCase() === 'yes') await auth.signOut().then(() => router.push("/"))
+                        }} variant={'contained'}><Logout/></IconButton>
+                    </div>
                 </ListItem>
                 <ListItem onClick={() => setQrCodeOpen(true)}>
                     <ListItemButton>
@@ -94,8 +105,18 @@ function ResponsiveDrawer() {
                     </ListItemButton>
                 </ListItem>}
                 <br/>
+                <ListItem onClick={() => router.push('/settings')}>
+                    <ListItemButton>
+                        <ListItemIcon>
+                            <Settings/>
+                        </ListItemIcon>
+                        <ListItemText primary={"Settings"}/>
+                    </ListItemButton>
+                </ListItem>
                 <ListItem>
-                    <ListItemButton onClick={() => generateThemeScheme("#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);}))}>
+                    <ListItemButton onClick={() => generateThemeScheme("#000000".replace(/0/g, function () {
+                        return (~~(Math.random() * 16)).toString(16);
+                    }))}>
                         <ListItemIcon>
                             <ColorLensOutlined/>
                         </ListItemIcon>
@@ -122,6 +143,15 @@ function ResponsiveDrawer() {
                 <ListItem>
                     <ListItemText
                         secondary={<>Copyright {(new Date()).getFullYear()} Kabeer's Network - Chats v<Version/></>}/>
+                </ListItem>
+                <ListItem>
+                    <ListItemButton onClick={() => router.push("/_config")}>
+                        <ListItemIcon>
+                            <Code/>
+                        </ListItemIcon>
+                        <ListItemText primary={'Developer Settings'}
+                                      secondary={'Settings intended for developers, things may break'}/>
+                    </ListItemButton>
                 </ListItem>
             </List>
         </div>

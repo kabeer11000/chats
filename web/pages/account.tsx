@@ -43,7 +43,7 @@ const Login = () => {
     return (
         <div style={{
             width: user ? (isDesktop ? `calc(100% - ${drawerWidth}px)` : "100%") : "100%",
-            marginLeft: user ? (isDesktop ? `${drawerWidth}px` : "0") : "0"
+            marginLeft: user ? (isDesktop ? `${drawerWidth}px` : "0") : "0", height: '100%',
         }}>
             <img src={"/images/bg-vector.svg"} style={{position: "fixed", zIndex: -1, top: 0, width: "120vw", height: "5rem"}}/>
             <Head>
@@ -65,7 +65,7 @@ const Login = () => {
                            justifyContent: "center",
                            alignItems: "center",
                            minHeight: '100%', overflowY: 'hidden',
-                           marginTop: isDesktop ? "10%" : '40%'
+                           // marginTop: isDesktop ? "20%" : '30%'
                        }}>
                 <Grid container spacing={1}>
                     <Grid item xs={12} p={2} style={{marginBottom: "5rem"}}>
@@ -86,14 +86,14 @@ const Login = () => {
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={6} style={{display: "flex", justifyContent: "center", padding: "0.5rem"}}>
-                        <Button variant={'outlined'} style={{width: '100%', height: "3rem"}}
+                        <Button variant={'outlined'} style={{ display: 'flex', justifyContent: 'space-evenly',width: '100%', height: "3rem"}}
                                 onClick={() => signIn(provider)}>
                             <img src={"/images/super-g.webp"}
                                  style={{width: "2rem", height: "auto", marginRight: "0.5rem"}}/> Sign in with Google
                         </Button>
                     </Grid>
                     <Grid item xs={12} md={6} style={{display: "flex", justifyContent: "center", padding: "0.5rem"}}>
-                        <Button variant={'outlined'} style={{width: '100%', height: "3rem"}}
+                        <Button variant={'outlined'} style={{ display: 'flex', justifyContent: 'space-evenly',width: '100%', height: "3rem"}}
                                 onClick={() => signIn(githubProvider)}>
                             <img src={"/images/github.png"}
                                  style={{
@@ -105,7 +105,7 @@ const Login = () => {
                         </Button>
                     </Grid>
                     <Grid item xs={12} md={6} style={{display: "flex", justifyContent: "center", padding: "0.5rem"}}>
-                        <Button variant={'outlined'} style={{width: '100%', height: "3rem"}}
+                        <Button variant={'outlined'} style={{width: '100%', display: 'flex', justifyContent: 'space-evenly', height: "3rem"}}
                                 onClick={() => signIn(facebookProvider)}>
                             <img src={"/images/facebook.webp"}
                                  style={{
