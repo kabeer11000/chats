@@ -22,7 +22,7 @@ module.exports = ({
         ignoreBuildErrors: true
     },
     env: {
-        // CHATS_NODE_ENV: "production",
+        CHATS_NODE_ENV: "production",
         BUILD_TYPE: "web",
 
         // "NODE_ENV": "production",
