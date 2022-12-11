@@ -75,8 +75,8 @@ export const RootProvider = (({children}) => {
     const router = useRouter();
     const [loadedMessages, setLoadedMessages] = useState(loadMessageLength);
     const [user] = useAuthState(auth);
-    const [chat, chatLoading] = useDocumentData(router.isReady ? db.collection("chats").doc(router.query.id).withConverter(converter) : null); //
-    const [messages, messagesLoading] = useCollectionData(chat ? db.collection("chats").doc(router.query.id).collection("messages").orderBy("timestamp", "asc").limitToLast(loadedMessages).withConverter(converter) : undefined); //
+    const [chat, chatLoading] = useDocumentData(router.isReady ? db.collection("chats").doc(router.query.id.toString()).withConverter(converter) : null); //
+    const [messages, messagesLoading] = useCollectionData(chat ? db.collection("chats").doc(router.query.id.toString()).collection("messages").orderBy("timestamp", "asc").limitToLast(loadedMessages).withConverter(converter) : undefined); //
     const [members, membersLoading] = useCollectionData(chat ? db.collection("users").where("email", "in", chat.users).withConverter(converter) : null); //
     const {setFiles, text, setText, files} = useContext(InputContext);
     const [reply, setReply] = useState<{ message: null | object }>({message: null});
@@ -99,6 +99,7 @@ export const RootProvider = (({children}) => {
         setActionBackdrop(false);
     }, []);
     const {getRootProps, getInputProps, isDragActive} = useDropzone({
+        // @ts-ignore
         onDrop, accept: "image/*", noClick: true, multiple: false
     });
     const onReply = useCallback(async (message: any) => setReply({message: message}), []);
@@ -106,8 +107,8 @@ export const RootProvider = (({children}) => {
         if (!files.length && text.trim() === '') return;
         // leaving promises hanging
         db.collection('users').doc(user.uid).set({lastActive: firebase.firestore.FieldValue.serverTimestamp()}, {merge: true}).then();
-        db.collection('chats').doc(router.query.id).set({lastSent: firebase.firestore.FieldValue.serverTimestamp()}, {merge: true}).then();
-        db.collection('chats').doc(router.query.id).collection('messages').add({
+        db.collection('chats').doc(router.query.id.toString()).set({lastSent: firebase.firestore.FieldValue.serverTimestamp()}, {merge: true}).then();
+        db.collection('chats').doc(router.query.id.toString()).collection('messages').add({
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
             message: text.trim(),
             user: user.email,
@@ -187,6 +188,7 @@ export const RootProvider = (({children}) => {
     console.count("[Conversation] Context Updated");
     return (
         <RootContext.Provider value={{
+            // @ts-ignore, it's there I just can't figure out how to fix this in typescript
             chat: {data: chat, loading: chatLoading},
             messages: {
                 data: messages, loading: messagesLoading,
@@ -201,7 +203,10 @@ export const RootProvider = (({children}) => {
     )
 });
 
-export const CallContext = createContext<{ calling: boolean, Create: () => any }>({calling: false});
+export const CallContext = createContext<{ calling: boolean, Create: () => any }>({
+    Create(): any {
+    }, calling: false
+});
 export const CallProvider = ({children}) => {
     const {chat, members, subscriptions} = useContext(RootContext);
     const [user, userLoading] = useAuthState(auth);
@@ -223,7 +228,7 @@ export const CallProvider = ({children}) => {
                 config: {audio: true, video: false}
             }
         }
-        await db.collection("chats").doc(router.query.id).set({call: callObject}, {merge: true});
+        await db.collection("chats").doc(router.query.id.toString()).set({call: callObject}, {merge: true});
         setState({calling: true, call: callObject});
         const windowId = v4();
         const uri = `/chat/${router.query.id}/call/${callObject.id}/?ui=v1&window=${windowId}`;

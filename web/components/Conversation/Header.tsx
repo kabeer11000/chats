@@ -1,5 +1,5 @@
 import {Fragment, useContext} from "react";
-import {DrawerContext} from "root-contexts";
+import {ActiveContext, DrawerContext} from "root-contexts";
 import {useRouter} from "next/router";
 import {CallContext, RootContext} from "./Context";
 import {useAuthState} from "react-firebase-hooks/auth";
@@ -45,6 +45,7 @@ export default function Header({scrollContainerRef}) {
     const {Create} = useContext(CallContext);
     const [user] = useAuthState(auth);
     const isOnline = useNetwork();
+    const {isDev} = useContext(ActiveContext);
     // @ts-ignore
     const filtered = chat.loading ? [] : chat.data?.users.filter((u) => u !== user.email);
     // @ts-ignore
@@ -116,14 +117,15 @@ export default function Header({scrollContainerRef}) {
                     />
 
                     <div style={{flex: 1, flexGrow: "1 1 auto"}}/>
-                    {!(!filteredMembers?.length || chat.loading || !chat.data || !isOnline) && <IconButton color="inherit"
+                    {isDev && !(!filteredMembers?.length || chat.loading || !chat.data || !isOnline) && <IconButton color="inherit"
                                                                                               onClick={Create}>
                         <Call/>
                     </IconButton>}
                     {!isDesktop &&
                         <IconButton color="inherit" onClick={() => router.push(`/chat/${router.query.id}/options`)}>
                             <Info/>
-                        </IconButton>}
+                        </IconButton>
+                    }
                 </Toolbar>
             </AppBar>
         </Fragment>

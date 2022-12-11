@@ -1,5 +1,5 @@
 /** Kabeer's Network Authors, chats-serviceworker v 2.4.0:1 **/
-const isLocalhost = true // self.location.host.split(":")[0] === "localhost";
+const isLocalhost = false; // self.location.host.split(":")[0] === "localhost";
 importScripts("/binaries/svg2png-wasm@1.3.4/dist/index.min.js");
 const NotificationTypes = {
     "Conversation.Message": "kn.chats.conversation.text.notification",
@@ -7,12 +7,12 @@ const NotificationTypes = {
     "General": "kn.chats.general.notification",
     "Action": "kn.chats.action.notification",
 };
-const VERSION = `2.4.0`;
+const VERSION = `2.4.1`;
 const Log = (...args) => console.log(`[Chats Service Worker] @ ${VERSION} \n`, ...args);
 const assetManifest = {
     "cache": {
-        "version": "2.4.0",
-        "key": "kn.chats.webcache." + "2.4.0:2",
+        "version": "2.4.1",
+        "key": "kn.chats.webcache." + "2.4.1",
         "files": ["/files/call_tune.mp3", "https://cdn.glitch.global/77b4c993-589e-4e39-8500-f03fc9765209/5c2f93a6-9329-426a-806b-587ddcf6a517.notification-badge.png?v=1663437251523", "/images/icon-512-maskable.png", "/images/icon-512.png", "/favicon.ico", "/images/broken-image.jpeg", "/_offline", "/binaries/svg2png_wasm_bg.wasm", "/binaries/svg2png-wasm@1.3.4/dist/index.min.js"]
     }
 };

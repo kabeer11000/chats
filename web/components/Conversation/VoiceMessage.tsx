@@ -8,6 +8,7 @@ const MuiAudioPlayer = dynamic(() => import("mui-audio-player-plus"), {
 export const VoiceMessage = ({url, paper,noMargin, width}) => {
     return (
         <div>
+            {/* @ts-ignore */}
             <MuiAudioPlayer showTimestamps={false} preload={"none"} display="timeline" containerWidth={width ?? "20rem"} inline={!noMargin} paperize={false} src={url}/>
         </div>
     );

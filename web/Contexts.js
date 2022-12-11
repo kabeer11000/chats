@@ -64,7 +64,7 @@ export const ChatProvider = ({children}) => {
     const createChat = async (input, {isGc} = {isGc: false}) => {
         if (!input) input = prompt(isGc ? 'Enter space seperated email addresses of new chat recipients' : 'Enter recipients email address');
         if (!input?.trim()) return null;
-        input = input.trim()
+        input = input.trim().toLowerCase();
         if (isGc ? ([...new Set(input.split(" "))].includes(user.email)) : input === user.email) return alert("You cannot chat with yourself");
         if (isGc) {
             for (const email of [...new Set(input.split(" "))]) if (!EmailValidator.validate(email)) return alert("Invalid Email: " + email);

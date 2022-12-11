@@ -35,7 +35,7 @@ const db = app.firestore();
 console.log("env: ", (process.env.CHATS_NODE_ENV ?? process.env.NEXT_RUNTIME["CHATS_NODE_ENV"]));
 // if ((process.env.CHATS_NODE_ENV ?? process.env.NEXT_RUNTIME?.CHATS_NODE_ENV) === "development") db.useEmulator("192.168.40.50", 4001);
 
-db.useEmulator(process?.env?.SELF_HOST_ADDRESS || "192.168.40.50", 4001);
+// db.useEmulator(process?.env?.SELF_HOST_ADDRESS || "192.168.40.50", 4001);
 db.settings({cacheSizeBytes: 5e+7, merge: true});
 const auth = app.auth();
 
