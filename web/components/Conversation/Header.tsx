@@ -7,6 +7,7 @@ import {auth} from "firebase-config";
 import dynamic from "next/dynamic";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
 import useNetwork from "../../hooks/useNetwork";
+import Link from "next/link";
 
 
 const AppBar = dynamic(() => import("@mui/material/AppBar"));
@@ -16,7 +17,7 @@ const IconButton = dynamic(() => import("@mui/material/IconButton"));
 const Avatar = dynamic(() => import("@mui/material/Avatar"));
 const ListItemText = dynamic(() => import("@mui/material/ListItemText"));
 const Typography = dynamic(() => import("@mui/material/Typography"));
-const TimeAgo = dynamic(() => import("timeago-react").then(({Default}) => Default));
+const TimeAgo = dynamic(() => import("timeago-react"));
 const CircularProgress = dynamic(() => import("@mui/material/CircularProgress"));
 const ArrowBack = dynamic(() => import("@mui/icons-material/ArrowBack"));
 const Info = dynamic(() => import("@mui/icons-material/Info"));
@@ -33,8 +34,10 @@ const MemberAvatar = ({member, small, email}) => {
         }
     };
     return member ? (
-        <Avatar {...smallProps} imgProps={{referrerPolicy: "no-referrer"}}
-                src={member.photoURL} label={email.slice(0, 2)}/>
+        <Link href={`/profile/${member.id}`}>
+            <Avatar {...smallProps} imgProps={{referrerPolicy: "no-referrer"}}
+                    src={member.photoURL} label={email.slice(0, 2)}/>
+        </Link>
     ) : (<Avatar {...smallProps} label={email.slice(0, 2)}/>);
 }
 export default function Header({scrollContainerRef}) {
@@ -53,6 +56,7 @@ export default function Header({scrollContainerRef}) {
 
     const trigger = useScrollTrigger({
         threshold: 0,
+        disableHysteresis: true,
         target: scrollContainerRef?.current ? scrollContainerRef.current : window ? window : undefined,
     });
     return (user) && (
@@ -108,19 +112,19 @@ export default function Header({scrollContainerRef}) {
                                   secondary={(
                                       <Typography variant={"subtitle2"} style={{color: "grey"}}>
                                           {/* @ts-ignore */}
-                                          {chat.data?.lastSent?.toDate() ? (
-                                              // @ts-ignore
-                                              <TimeAgo datetime={chat.data?.lastSent?.toDate()}/>
+                                          {chat.data?.lastSent ? (
+                                              <TimeAgo datetime={chat.data.lastSent.toDate()}/>
                                           ) : ('Unavailable')}
                                       </Typography>
                                   )}
                     />
 
                     <div style={{flex: 1, flexGrow: "1 1 auto"}}/>
-                    {isDev && !(!filteredMembers?.length || chat.loading || !chat.data || !isOnline) && <IconButton color="inherit"
-                                                                                              onClick={Create}>
-                        <Call/>
-                    </IconButton>}
+                    {isDev && !(!filteredMembers?.length || chat.loading || !chat.data || !isOnline) &&
+                        <IconButton color="inherit"
+                                    onClick={Create}>
+                            <Call/>
+                        </IconButton>}
                     {!isDesktop &&
                         <IconButton color="inherit" onClick={() => router.push(`/chat/${router.query.id}/options`)}>
                             <Info/>

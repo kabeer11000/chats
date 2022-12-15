@@ -15,7 +15,7 @@ export const DrawerContext = createContext({
 });
 export const DrawerProvider = ({children}) => {
     const [drawerWidth, setDrawerWidth] = useState(340)
-    const matches = useMediaQuery('(min-width:700px)');
+    const matches = useMediaQuery('(min-width:600px)');
     const [state, setState] = useState({
         mobileOpen: false,
     });

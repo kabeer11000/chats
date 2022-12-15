@@ -93,7 +93,7 @@ export default function Home() {
                     <CircularProgress/>
                 </div>}
             </div>
-            <div style={{position: "fixed", bottom: "2rem", right: "1rem"}}>
+            <div style={{position: "absolute", bottom: "2rem", right: "1rem"}}>
                 <Zoom in={(isDesktop ? true : !mobileOpen) && (!chatSnapshotLoading && chats)}>
                     <div>
                         <SpeedDial icon={<Add/>} color="tertiary" ariaLabel={"Create"}>

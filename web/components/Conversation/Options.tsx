@@ -9,6 +9,7 @@ import Paper from "@mui/material/Paper";
 import {RootContext} from "@/components/Conversation/Context";
 import {useTheme} from "@mui/material/styles";
 import Delayed from "@/components/Delayed";
+import {useConfirm} from "material-ui-confirm";
 // @ts-ignore
 const Delete = dynamic(() => import("@mui/icons-material/Delete"));
 // @ts-ignore
@@ -36,17 +37,18 @@ export const Options = (({embedded}) => {
         });
     }, []);
     const theme = useTheme();
+    const confirm = useConfirm();
     // @ts-ignore
     return (
-        <div>
+        <div style={{maxHeight: '100%'}}>
             {!embedded && <ListSubheader>Conversation Options</ListSubheader>}
             <List>
                 <ListItem disablePadding>
                     <ListItemButton onClick={async () => {
-                        const sure = prompt("Are you sure you want to delete this Conversation? type in \"yes\" to confirm (you cannot undo this action)");
-                        if (sure !== "yes") return;
-                        await db.collection("chats").doc(router.query?.id?.toString()).delete();
-                        await router.push("/");
+                        confirm({title: 'Delete Conversation', confirmationText: "Delete", description: 'Are you sure you want to delete this Conversation? (you cannot undo this action)'}).then(() => {
+                            db.collection("chats").doc(router.query?.id?.toString()).delete();
+                            router.push("/");
+                        }).catch()
                     }}>
                         <ListItemIcon color={'inherit'}>
                             <Delete/>

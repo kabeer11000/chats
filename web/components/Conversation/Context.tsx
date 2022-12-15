@@ -70,12 +70,13 @@ export const RootContext = createContext<{
         Upload: ({file}: { file: File }) => Promise<{ url: string, type: ("kn.chats.IMAGE" | "kn.chats.AUDIO") }>,
     }
 } | undefined>(undefined);
-const loadMessageLength = 100
+const loadMessageLength = 5//100;
 export const RootProvider = (({children}) => {
     const router = useRouter();
     const [loadedMessages, setLoadedMessages] = useState(loadMessageLength);
     const [user] = useAuthState(auth);
     const [chat, chatLoading] = useDocumentData(router.isReady ? db.collection("chats").doc(router.query.id.toString()).withConverter(converter) : null); //
+    // const [messages, messagesLoading] = useCollectionData(chat ? db.collection("chats").doc(router.query.id.toString()).collection("messages").orderBy("timestamp", "asc").limitToLast(loadedMessages).withConverter(converter) : undefined); //
     const [messages, messagesLoading] = useCollectionData(chat ? db.collection("chats").doc(router.query.id.toString()).collection("messages").orderBy("timestamp", "asc").limitToLast(loadedMessages).withConverter(converter) : undefined); //
     const [members, membersLoading] = useCollectionData(chat ? db.collection("users").where("email", "in", chat.users).withConverter(converter) : null); //
     const {setFiles, text, setText, files} = useContext(InputContext);
@@ -106,8 +107,10 @@ export const RootProvider = (({children}) => {
     const SendMessage = useCallback(async () => {
         if (!files.length && text.trim() === '') return;
         // leaving promises hanging
-        db.collection('users').doc(user.uid).set({lastActive: firebase.firestore.FieldValue.serverTimestamp()}, {merge: true}).then();
-        db.collection('chats').doc(router.query.id.toString()).set({lastSent: firebase.firestore.FieldValue.serverTimestamp()}, {merge: true}).then();
+        const batch = db.batch()
+        batch.set(db.collection('users').doc(user.uid), {lastActive: firebase.firestore.FieldValue.serverTimestamp()}, {merge: true});
+        batch.set(db.collection('chats').doc(router.query.id.toString()), {lastSent: firebase.firestore.FieldValue.serverTimestamp()}, {merge: true});
+        batch.commit()
         db.collection('chats').doc(router.query.id.toString()).collection('messages').add({
             timestamp: firebase.firestore.FieldValue.serverTimestamp(),
             message: text.trim(),

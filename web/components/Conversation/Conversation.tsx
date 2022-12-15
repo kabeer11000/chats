@@ -5,6 +5,7 @@ import {DrawerContext} from "root-contexts";
 import {CallProvider, RootContext} from "./Context";
 import {useTheme} from "@mui/material/styles";
 import {Grow} from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 const Messages = dynamic(() => import("./Messages"));
 const AudioMessageSheet = dynamic(() => import("./AudioMessageSheet"));
@@ -42,6 +43,7 @@ const Conversation = () => {
     const {type: drawerType, drawerWidth, isDesktop} = useContext(DrawerContext);
     const {Files, chat} = useContext(RootContext);
     const scrollContainerRef = useRef()
+    const matches = useMediaQuery('(min-width:800px)');
     const theme = useTheme();
     return (
         <Fragment>
@@ -72,7 +74,7 @@ const Conversation = () => {
                     <div style={{marginTop: "auto"}}><Input/></div>
                 </div>
                 {/*<Divider variant={'fullWidth'} orientation={'vertical'}/>*/}
-                {isDesktop && <div style={{flex: 1, maxWidth: drawerWidth, height: 'auto'}}>
+                {(matches) && <div style={{flex: 1, maxWidth: drawerWidth, height: 'auto'}}>
                     <div style={{marginTop: '3rem'}}><Options/></div>
                 </div>}
             </div>
@@ -85,4 +87,4 @@ const Conversation = () => {
     );
 };
 
-export default memo(Conversation);
+export default (Conversation);

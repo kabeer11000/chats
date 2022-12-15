@@ -1,15 +1,18 @@
 // @ts-ignore
 import {useAuthState} from 'react-firebase-hooks/auth';
 // @ts-ignore
-import {auth} from '../../firebaseconfig';
+import {auth} from 'firebase-config';
 import {Fragment, memo, useCallback, useContext, useEffect, useState} from "react";
 // @ts-ignore
-import {DrawerContext} from "../../Contexts";
+import Linkify from '@kabeersnetwork/material-ui-linkify';
+// @ts-ignore
+import {DrawerContext} from "root-contexts";
 // @ts-ignore
 import useTheme from "@mui/material/styles/useTheme";
 // @ts-ignore
 import dynamic from "next/dynamic";
 import {RootContext} from "./Context";
+import {connect} from "@/components/ConnectHOC";
 // @ts-ignore
 const VoiceMessage = dynamic(() => import("./VoiceMessage"));
 // @ts-ignore
@@ -27,21 +30,20 @@ const Paper = dynamic(() => import("@mui/material/Paper"));
 // @ts-ignore
 const Typography = dynamic(() => import("@mui/material/Typography"));
 // @ts-ignore
-const Delete = dynamic(() => import("@mui/icons-material/Delete"));
+// const Delete = dynamic(() => import("@mui/icons-material/Delete"));
 // @ts-ignore
 const Reply = dynamic(() => import("@mui/icons-material/Reply"));
 
-const Message = ({message, continued, replyingTo}) => {
-    const [currentUser] = useAuthState(auth);
+const Message = ({message, continued, replyingTo, currentUser, onReply}) => {
     const [options, setOptions] = useState(false);
-    const {methods: {DeleteMessage, onReply}} = useContext(RootContext);
+    // const {methods: {onReply}} = useContext(RootContext); // DeleteMessage,
     const theme = useTheme();
     const messageType = message.user === currentUser.email ? 'sender' : 'receiver';
     // @ts-ignore
     const {isDesktop} = useContext(DrawerContext);
     const MessageOptionsSender = useCallback(() => <div
         style={{display: "flex", marginLeft: "1rem", marginRight: "1rem"}}>
-        <IconButton color={"inherit"} onClick={() => DeleteMessage(message)}><Delete scale={5}/></IconButton>
+        {/*<IconButton color={"inherit"} onClick={() => DeleteMessage(message)}><Delete scale={5}/></IconButton>*/}
         <IconButton color={"inherit"} onClick={() => onReply(message)}><Reply scale={5}/></IconButton>
     </div>, [message]);
     const MessageOptionsReceiver = useCallback(() => <div
@@ -55,7 +57,8 @@ const Message = ({message, continued, replyingTo}) => {
     const [reply, setReply] = useState({
         dragging: false,
         message: null,
-        disabled: !isDesktop
+        disabled: !isDesktop,
+        replied: false
     });
     useEffect(() => {
         if (reply.message && !reply.dragging) onReply(reply.message).catch();
@@ -63,13 +66,14 @@ const Message = ({message, continued, replyingTo}) => {
     const isImage = message?.files?.find(({type}) => type === "kn.chats.IMAGE");
     const isAudio = message?.files?.find(({type}) => type === "kn.chats.AUDIO");
     return (
-        <Box {...desktopOptionsProps}
+        <div {...desktopOptionsProps}
              style={{display: "flex", position: "relative", width: "100%", padding: "0.25rem", alignItems: "center"}}>
             {messageType === "sender" && <div style={{flexGrow: "1 1 auto", flex: 2}}/>}
-            {(messageType === "receiver" && !continued ) && <Avatar imgProps={{referrerPolicy: "no-referrer"}} src={message.photoURL} title={message.email}
-                                                   style={{width: "2rem", height: "2rem", marginRight: "0.5rem"}}/>}
+            {(messageType === "receiver" && !continued) &&
+                <Avatar imgProps={{referrerPolicy: "no-referrer"}} src={message.photoURL} title={message.email}
+                        style={{width: "2rem", height: "2rem", marginRight: "0.5rem"}}/>}
             {options && messageType === "sender" && <div><MessageOptionsSender/></div>}
-            {continued && <div style={{width: "2.5rem"}}/> }
+            {continued && <div style={{width: "2.5rem"}}/>}
             <Draggable
                 enableUserSelectHack={true}
                 axis="x"
@@ -86,13 +90,26 @@ const Message = ({message, continued, replyingTo}) => {
                 disabled={isDesktop || !message.message}
                 onStart={() => setReply({...reply, dragging: true})}
                 onDrag={async (a, {x}) => {
-                    if (messageType === "sender" && x <= -200) setReply({...reply, dragging: false, message: message})
-                    if (messageType === "receiver" && x >= 200) setReply({...reply, dragging: false, message: message})
+                    if (!reply.replied && messageType === "sender" && x <= -200) setReply({
+                        ...reply,
+                        replied: true,
+                        dragging: false,
+                        message: message
+                    })
+                    if (!reply.replied && messageType === "receiver" && x >= 200) setReply({
+                        ...reply,
+                        replied: true,
+                        dragging: false,
+                        message: message
+                    })
                 }}
-                onStop={() => setReply({...reply, dragging: false})}>
+                onStop={() => setReply({...reply, replied: false, dragging: false})}>
                 <div
                     style={{
-                        justifyContent: "center", maxWidth: isDesktop ? "60%" : "70%", flexDirection: "column", display: "flex",
+                        justifyContent: "center",
+                        maxWidth: isDesktop ? "60%" : "80%",
+                        flexDirection: "column",
+                        display: "flex",
                         transitionDuration: "0.1s"
                     }}>
                     <div className={"reply"} style={{position: "relative"}}>
@@ -136,27 +153,28 @@ const Message = ({message, continued, replyingTo}) => {
                                         )
                                 }
                             }) : null}
-                            <Typography style={{paddingLeft:"0.5rem"}} variant={"body2"}>{replyingTo.message}</Typography>
+                            <Typography style={{paddingLeft: "0.5rem"}}
+                                        variant={"body2"}>{replyingTo.message}</Typography>
                         </div> : null}
                     </div>
                     {isImage && <Fragment>
                         <ButtonBase onClick={() => window.open(isImage.url)}
-                                            style={{borderTopLeftRadius: "1rem", borderTopRightRadius: "1rem"}}>
-                        <img
-                            alt={"nah"}
-                            // @ts-ignore
-                            onError={(e) => (e.target.onerror = null, e.target.src = "/images/broken-image.jpeg")}
-                            src={isImage.url} loading={"lazy"}
-                            style={{
-                                width: "100%",
-                                maxWidth: "30rem",
-                                height: "auto",
-                                objectFit: "cover",
-                                borderTopLeftRadius: "0.5rem",
-                                borderTopRightRadius: "0.5rem",
-                                borderRadius: message.message.length ? "inherit" : "1rem"
-                            }}/>
-                    </ButtonBase>
+                                    style={{borderTopLeftRadius: "1rem", borderTopRightRadius: "1rem"}}>
+                            <img
+                                alt={"nah"}
+                                // @ts-ignore
+                                onError={(e) => (e.target.onerror = null, e.target.src = "/images/broken-image.jpeg")}
+                                src={isImage.url} loading={"lazy"}
+                                style={{
+                                    width: "100%",
+                                    maxWidth: "30rem",
+                                    height: "auto",
+                                    objectFit: "cover",
+                                    borderTopLeftRadius: "0.5rem",
+                                    borderTopRightRadius: "0.5rem",
+                                    borderRadius: message.message.length ? "inherit" : "1rem"
+                                }}/>
+                        </ButtonBase>
                     </Fragment>}
                     {isAudio && <div style={{
                         ...message.message.length ? {} : {borderRadius: "0.5rem"},
@@ -168,16 +186,23 @@ const Message = ({message, continued, replyingTo}) => {
                         <VoiceMessage paper={!!!message.message.length} width={"100%"} url={isAudio.url}/>
                     </div>}
                     <Paper className={"message-swipe-to-reply-handle"} hidden={!!!message.message.length} style={{
-                        backgroundColor: messageType === "sender" ? theme.palette.primary[theme.palette.mode === "dark" ? "dark" : "main"] : theme.palette.mode === "dark" ? theme.palette.grey["800"] : theme.palette.grey["200"],
+                        backgroundColor: "#000000".replace(/0/g, function () {
+                            return (~~(Math.random() * 16)).toString(16);
+                        }),// messageType === "sender" ? theme.palette.primary[theme.palette.mode === "dark" ? "dark" : "main"] : theme.palette.mode === "dark" ? theme.palette.grey["800"] : theme.palette.grey["200"],
                         padding: "0.5rem 1rem",
                         borderRadius: message?.files?.length ? "0 0 1rem  1rem" : "1rem",
                         // "&:hover": {backgroundColor: 'rgb(7, 177, 77, 0.42)'}
                     }} elevation={0}>
-                        <Typography
-                            style={{
-                                color: theme.palette.getContrastText( messageType === "sender" ? theme.palette.primary[theme.palette.mode === "dark" ? "dark" : "main"] : theme.palette.mode === "dark" ? theme.palette.grey["800"] : theme.palette.grey["200"]),
-                                wordBreak: "break-all"
-                            }}>{message.message}</Typography>
+                        <Linkify
+                            properties={{target: '_blank', style: {color: "blue!important"}}}>
+                            <Typography
+                                style={{
+                                    color: theme.palette.getContrastText(messageType === "sender" ? theme.palette.primary[theme.palette.mode === "dark" ? "dark" : "main"] : theme.palette.mode === "dark" ? theme.palette.grey["800"] : theme.palette.grey["200"]),
+                                    wordBreak: "break-all"
+                                }}>
+                                {message.message}
+                            </Typography>
+                        </Linkify>
                     </Paper>
                 </div>
             </Draggable>
@@ -185,8 +210,14 @@ const Message = ({message, continued, replyingTo}) => {
             {/*{options && messageType === "receiver" && <div><MessageOptions/></div>}*/}
             {messageType === "receiver" && <div style={{flexGrow: "1 1 auto", flex: 1}}/>}
             {/*<div className={"message-swipe-to-reply-handle"} style={{backgroundColor: "red", left: messageType === "receiver" ? 0 : "80%", height: "50%", width: "30%", alignSelf: "center", position: "absolute"}}/>*/}
-        </Box>
+        </div>
     );
 };
 
-export default memo(Message);
+function select(){
+    const {methods: {onReply}} = useContext(RootContext);
+    return {onReply}
+}
+
+// export default connect(memo(Messages), select);
+export default connect(memo(Message), select);

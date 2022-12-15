@@ -4,10 +4,14 @@ import Header from "../../components/Header";
 import {useContext} from "react";
 import {ChatContext, DrawerContext} from "../../Contexts";
 import TimeAgo from "timeago-react"
+import {useDocumentData} from "react-firebase-hooks/firestore";
+import {converter} from "../../components/Conversation/Context";
+import {useRouter} from "next/router";
 
-export default function Profile({user}) {
-    console.log(user);
-    const {drawerWidth, type, isDesktop} = useContext(DrawerContext);
+export default function Profile() {
+    const router = useRouter();
+    const [owner, ownerLoading] = useDocumentData(db.collection('users').doc(router.query.id).withConverter(converter));
+    const {drawerWidth, type} = useContext(DrawerContext);
     const {createChat} = useContext(ChatContext)
     return (
         <div>
@@ -16,18 +20,18 @@ export default function Profile({user}) {
                 style={{marginLeft: type === "permanent" ? drawerWidth : 0}}>
                 <Header/>
                 <Container maxWidth={"md"} style={{marginTop: "1rem"}}>
-                    {user ?
+                    {owner ?
                         <div style={{display: "flex", flexDirection: "column"}}>
                             <div style={{display: "flex", justifyContent: "center", flex: 1}}>
-                                <Avatar src={user.photoURL} style={{width: "5rem", height: "5rem"}}/>
+                                <Avatar src={owner.photoURL} style={{width: "5rem", height: "5rem"}}/>
                             </div>
                             <List>
                                 <ListItem>
-                                    <ListItemText primary={user.email} secondary={<TimeAgo
-                                        datetime={new Date(user.lastActive.seconds * 1000)}/>}/>
+                                    <ListItemText primary={owner.email} secondary={<TimeAgo
+                                        datetime={new Date(owner.lastActive.seconds * 1000)}/>}/>
                                 </ListItem>
                                 <List>
-                                    <Button onClick={() => createChat(user.email)}
+                                    <Button onClick={() => createChat(owner.email)}
                                             style={{width: "100%", marginTop: "1rem"}} variant={"contained"}>
                                         Add to chat
                                     </Button>
@@ -41,13 +45,3 @@ export default function Profile({user}) {
         </div>
     )
 }
-// if (process.env.BUILD_TYPE !== "native") {
-export const _getServerSideProps = async ({query}) => {
-    const user = await (db.collection('users').where('email', '==', query.id).limit(1).get());
-    return ({
-        props: {
-            user: user.docs.length ? JSON.parse(JSON.stringify(user.docs[0].data())) : null
-        }
-    })
-}
-// }

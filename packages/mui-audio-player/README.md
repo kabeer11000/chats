@@ -3,7 +3,7 @@
 Material UI + Wavesurfer based Audio Player
 
 ```
-npm i mui-audio-player-plus
+npm i @kabeersnetwork/mui-audio-player-plus
 ```
 
 # Demo and Usage

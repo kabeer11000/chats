@@ -1,0 +1,200 @@
+2022-12-15 17:10:54,507:DEBUG:certbot._internal.main:certbot version: 1.31.0
+2022-12-15 17:10:54,507:DEBUG:certbot._internal.main:Location of certbot entry point: /usr/local/bin/certbot
+2022-12-15 17:10:54,507:DEBUG:certbot._internal.main:Arguments: ['--work-dir', '/Users/asadrizvi/Documents/Projects/kabeer-chats/deployment/ssl/work', '--config-dir', '/Users/asadrizvi/Documents/Projects/kabeer-chats/deployment/ssl/config/', '--logs-dir', '/Users/asadrizvi/Documents/Projects/kabeer-chats/deployment/ssl/logs/', '--manual']
+2022-12-15 17:10:54,507:DEBUG:certbot._internal.main:Discovered plugins: PluginsRegistry(PluginEntryPoint#apache,PluginEntryPoint#manual,PluginEntryPoint#nginx,PluginEntryPoint#null,PluginEntryPoint#standalone,PluginEntryPoint#webroot)
+2022-12-15 17:10:54,549:DEBUG:certbot._internal.log:Root logging level set at 30
+2022-12-15 17:10:54,550:DEBUG:certbot._internal.plugins.selection:Requested authenticator manual and installer None
+2022-12-15 17:10:54,554:DEBUG:certbot._internal.plugins.selection:Single candidate plugin: * manual
+Description: Manual configuration or run your own shell scripts
+Interfaces: Authenticator, Plugin
+Entry point: manual = certbot._internal.plugins.manual:Authenticator
+Initialized: <certbot._internal.plugins.manual.Authenticator object at 0x10d8dd690>
+Prep: True
+2022-12-15 17:10:54,554:DEBUG:certbot._internal.plugins.selection:Selected authenticator <certbot._internal.plugins.manual.Authenticator object at 0x10d8dd690> and installer None
+2022-12-15 17:10:54,554:INFO:certbot._internal.plugins.selection:Plugins selected: Authenticator manual, Installer None
+2022-12-15 17:11:01,864:DEBUG:acme.client:Sending GET request to https://acme-v02.api.letsencrypt.org/directory.
+2022-12-15 17:11:01,921:DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): acme-v02.api.letsencrypt.org:443
+2022-12-15 17:11:02,839:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "GET /directory HTTP/1.1" 200 659
+2022-12-15 17:11:02,840:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Date: Thu, 15 Dec 2022 12:11:03 GMT
+Content-Type: application/json
+Content-Length: 659
+Connection: keep-alive
+Cache-Control: public, max-age=0, no-cache
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+{
+  "keyChange": "https://acme-v02.api.letsencrypt.org/acme/key-change",
+  "meta": {
+    "caaIdentities": [
+      "letsencrypt.org"
+    ],
+    "termsOfService": "https://letsencrypt.org/documents/LE-SA-v1.3-September-21-2022.pdf",
+    "website": "https://letsencrypt.org"
+  },
+  "newAccount": "https://acme-v02.api.letsencrypt.org/acme/new-acct",
+  "newNonce": "https://acme-v02.api.letsencrypt.org/acme/new-nonce",
+  "newOrder": "https://acme-v02.api.letsencrypt.org/acme/new-order",
+  "revokeCert": "https://acme-v02.api.letsencrypt.org/acme/revoke-cert",
+  "v53XhYG8H3E": "https://community.letsencrypt.org/t/adding-random-entries-to-the-directory/33417"
+}
+2022-12-15 17:11:07,281:DEBUG:acme.client:Requesting fresh nonce
+2022-12-15 17:11:07,282:DEBUG:acme.client:Sending HEAD request to https://acme-v02.api.letsencrypt.org/acme/new-nonce.
+2022-12-15 17:11:07,615:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "HEAD /acme/new-nonce HTTP/1.1" 200 0
+2022-12-15 17:11:07,616:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Date: Thu, 15 Dec 2022 12:11:08 GMT
+Connection: keep-alive
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index"
+Replay-Nonce: 20F6Hya0DuPVqGU7s6SX6sRKtUNakqC3Ylt4tpNmfHcugHA
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+
+2022-12-15 17:11:07,617:DEBUG:acme.client:Storing nonce: 20F6Hya0DuPVqGU7s6SX6sRKtUNakqC3Ylt4tpNmfHcugHA
+2022-12-15 17:11:07,617:DEBUG:acme.client:JWS payload:
+b'{\n  "contact": [\n    "mailto:kabeer@kabeersnetwork.tk"\n  ],\n  "termsOfServiceAgreed": true\n}'
+2022-12-15 17:11:07,620:DEBUG:acme.client:Sending POST request to https://acme-v02.api.letsencrypt.org/acme/new-acct:
+{
+  "protected": "eyJhbGciOiAiUlMyNTYiLCAiandrIjogeyJuIjogIjFMWjdOWE9pWE45QUVqS3hjRHhISXEtV1Y2a3VLZDl5WVE2MVd5TEJkbHpNU002cmJzRVhSWHNSbFRndWp6U1ltaHpOQVRrbHpiOFo2MFpaSXBRTXF5TzhjWm9Nem5XVnRrVVh6NGJGT2tkSjU0Q3dzaDBSOUltVkppTVNpVlpibTlpYzFfQ0tPcF9BVVJmUWtOQXZmNlZIeHp6YmM0QUpUSnFPSDNqRnVCcjBMWmY2TFdvQjZQZ05Xc3lMWEVqQWdvd0N1Nl85U2JNVW5iNUlGRnJmSmdvZHE3ZENqXzNjVmhGNzNtM0lNXzBtV2thanFSTjgxVnNueDN5cHJvY3dnYmdRMnFSVU1DU1JfUUlrSTRjeGp3R1hSMXhkOXhVNHhQZWxtYk52MzM4TXJhTGdhR1U0SlV3SUMwcmVCa2RZWV9VZXpQWldUNnU2SFFvdGRzUVd5USIsICJlIjogIkFRQUIiLCAia3R5IjogIlJTQSJ9LCAibm9uY2UiOiAiMjBGNkh5YTBEdVBWcUdVN3M2U1g2c1JLdFVOYWtxQzNZbHQ0dHBObWZIY3VnSEEiLCAidXJsIjogImh0dHBzOi8vYWNtZS12MDIuYXBpLmxldHNlbmNyeXB0Lm9yZy9hY21lL25ldy1hY2N0In0",
+  "signature": "y5DyQJMQdYvjf3h8O5yoR97FSF50BwHRihCMtHlpslvwGmY4wDPdlg6C6LaTCOnT7FkE14Srw3-GtBrGWvN15fcOymrdIOiEhZrmsjk_IkzFC5dZ6eC2SEe2wWE0rnsstd8e0ryziad5zuv5LVDfGA_-CJ3eKcksP3yFeKqEEXJvDIfBt_xOPuxh5TBzITNE3TNOVGNgnMD8NNhlrns45Sy-KeuPFx0DabbZQLoR5EsLcvNuXYOW3Tvwe7rHjj-VMTjWpKgwNhLu8fc3VXzrc5WbXRxS882vQvbwyW8-kLpaefCM6bftbkZiW-2OUKv4ggGx11VMk9IKvBTaUe0ZCA",
+  "payload": "ewogICJjb250YWN0IjogWwogICAgIm1haWx0bzprYWJlZXJAa2FiZWVyc25ldHdvcmsudGsiCiAgXSwKICAidGVybXNPZlNlcnZpY2VBZ3JlZWQiOiB0cnVlCn0"
+}
+2022-12-15 17:11:07,930:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "POST /acme/new-acct HTTP/1.1" 201 567
+2022-12-15 17:11:07,931:DEBUG:acme.client:Received response:
+HTTP 201
+Server: nginx
+Date: Thu, 15 Dec 2022 12:11:08 GMT
+Content-Type: application/json
+Content-Length: 567
+Connection: keep-alive
+Boulder-Requester: 872723457
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index", <https://letsencrypt.org/documents/LE-SA-v1.3-September-21-2022.pdf>;rel="terms-of-service"
+Location: https://acme-v02.api.letsencrypt.org/acme/acct/872723457
+Replay-Nonce: 20F65Zi-9n-qZuMhCvF0U_Kc2SylLsg4nXDTrqF1omxbFD4
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+{
+  "key": {
+    "kty": "RSA",
+    "n": "1LZ7NXOiXN9AEjKxcDxHIq-WV6kuKd9yYQ61WyLBdlzMSM6rbsEXRXsRlTgujzSYmhzNATklzb8Z60ZZIpQMqyO8cZoMznWVtkUXz4bFOkdJ54Cwsh0R9ImVJiMSiVZbm9ic1_CKOp_AURfQkNAvf6VHxzzbc4AJTJqOH3jFuBr0LZf6LWoB6PgNWsyLXEjAgowCu6_9SbMUnb5IFFrfJgodq7dCj_3cVhF73m3IM_0mWkajqRN81Vsnx3yprocwgbgQ2qRUMCSR_QIkI4cxjwGXR1xd9xU4xPelmbNv338MraLgaGU4JUwIC0reBkdYY_UezPZWT6u6HQotdsQWyQ",
+    "e": "AQAB"
+  },
+  "contact": [
+    "mailto:kabeer@kabeersnetwork.tk"
+  ],
+  "initialIp": "39.50.230.226",
+  "createdAt": "2022-12-15T12:11:08.875974771Z",
+  "status": "valid"
+}
+2022-12-15 17:11:07,931:DEBUG:acme.client:Storing nonce: 20F65Zi-9n-qZuMhCvF0U_Kc2SylLsg4nXDTrqF1omxbFD4
+2022-12-15 17:11:14,430:DEBUG:certbot._internal.display.obj:Notifying user: Account registered.
+2022-12-15 17:11:14,430:DEBUG:certbot._internal.main:Picked account: <Account(RegistrationResource(body=Registration(key=JWKRSA(key=<ComparableRSAKey(<cryptography.hazmat.backends.openssl.rsa._RSAPublicKey object at 0x10d92a7d0>)>), contact=('mailto:kabeer@kabeersnetwork.tk',), agreement=None, status='valid', terms_of_service_agreed=None, only_return_existing=None, external_account_binding=None), uri='https://acme-v02.api.letsencrypt.org/acme/acct/872723457', new_authzr_uri=None, terms_of_service='https://letsencrypt.org/documents/LE-SA-v1.3-September-21-2022.pdf'), 626112ce8a6877dfd440797234b4778e, Meta(creation_dt=datetime.datetime(2022, 12, 15, 12, 11, 7, tzinfo=<UTC>), creation_host='50.40.168.192.in-addr.arpa', register_to_eff='kabeer@kabeersnetwork.tk'))>
+2022-12-15 17:11:14,431:DEBUG:certbot.display.ops:No installer, picking names manually
+2022-12-15 17:11:27,186:DEBUG:certbot._internal.display.obj:Notifying user: Requesting a certificate for *.chats.kabeersnetwork.tk
+2022-12-15 17:11:27,436:DEBUG:certbot.crypto_util:Generating RSA key (2048 bits): /Users/asadrizvi/Documents/Projects/kabeer-chats/deployment/ssl/config/keys/0000_key-certbot.pem
+2022-12-15 17:11:27,445:DEBUG:certbot.crypto_util:Creating CSR: /Users/asadrizvi/Documents/Projects/kabeer-chats/deployment/ssl/config/csr/0000_csr-certbot.pem
+2022-12-15 17:11:27,447:DEBUG:acme.client:JWS payload:
+b'{\n  "identifiers": [\n    {\n      "type": "dns",\n      "value": "*.chats.kabeersnetwork.tk"\n    }\n  ]\n}'
+2022-12-15 17:11:27,448:DEBUG:acme.client:Sending POST request to https://acme-v02.api.letsencrypt.org/acme/new-order:
+{
+  "protected": "eyJhbGciOiAiUlMyNTYiLCAia2lkIjogImh0dHBzOi8vYWNtZS12MDIuYXBpLmxldHNlbmNyeXB0Lm9yZy9hY21lL2FjY3QvODcyNzIzNDU3IiwgIm5vbmNlIjogIjIwRjY1WmktOW4tcVp1TWhDdkYwVV9LYzJTeWxMc2c0blhEVHJxRjFvbXhiRkQ0IiwgInVybCI6ICJodHRwczovL2FjbWUtdjAyLmFwaS5sZXRzZW5jcnlwdC5vcmcvYWNtZS9uZXctb3JkZXIifQ",
+  "signature": "gxG1zU0wRSW-Bp__QTl2tK0s2TTVA-bTn4Rttkj8GuYDFgu-l_PNynD8F7d_zR_2GVe-EelN1l6CUkq2ektqag6NNoQocvO3X1Tw46XZ3IU05AiW6XG_PCG2YT7f-YHdRdW3x0SbHDl-gMcWvOsACcXoUxoSLfuZmnnlcuf0SY8lg7s2d0iR-uEtAX8Drk3_Rcz7vCAJGS3b_9w509Nv22KLOBa3_bW-9w-zsvIPZYpax2EeN2iLQxf2BUBaFADEQ8_lsWqol2x-_gxT27p26D_AZXxFbmpL1htV9sxGq4nimi8FxEIeAk5zU_FKGtWf8twYd77umIJr6l_DVALA2A",
+  "payload": "ewogICJpZGVudGlmaWVycyI6IFsKICAgIHsKICAgICAgInR5cGUiOiAiZG5zIiwKICAgICAgInZhbHVlIjogIiouY2hhdHMua2FiZWVyc25ldHdvcmsudGsiCiAgICB9CiAgXQp9"
+}
+2022-12-15 17:11:27,789:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "POST /acme/new-order HTTP/1.1" 201 350
+2022-12-15 17:11:27,790:DEBUG:acme.client:Received response:
+HTTP 201
+Server: nginx
+Date: Thu, 15 Dec 2022 12:11:28 GMT
+Content-Type: application/json
+Content-Length: 350
+Connection: keep-alive
+Boulder-Requester: 872723457
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index"
+Location: https://acme-v02.api.letsencrypt.org/acme/order/872723457/152872807217
+Replay-Nonce: A5FEqWAluMh_cz2r2jG8cWmP1o61sasmr1PQyKxmA2bxGtc
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+{
+  "status": "pending",
+  "expires": "2022-12-22T12:11:28Z",
+  "identifiers": [
+    {
+      "type": "dns",
+      "value": "*.chats.kabeersnetwork.tk"
+    }
+  ],
+  "authorizations": [
+    "https://acme-v02.api.letsencrypt.org/acme/authz-v3/187204424037"
+  ],
+  "finalize": "https://acme-v02.api.letsencrypt.org/acme/finalize/872723457/152872807217"
+}
+2022-12-15 17:11:27,791:DEBUG:acme.client:Storing nonce: A5FEqWAluMh_cz2r2jG8cWmP1o61sasmr1PQyKxmA2bxGtc
+2022-12-15 17:11:27,792:DEBUG:acme.client:JWS payload:
+b''
+2022-12-15 17:11:27,794:DEBUG:acme.client:Sending POST request to https://acme-v02.api.letsencrypt.org/acme/authz-v3/187204424037:
+{
+  "protected": "eyJhbGciOiAiUlMyNTYiLCAia2lkIjogImh0dHBzOi8vYWNtZS12MDIuYXBpLmxldHNlbmNyeXB0Lm9yZy9hY21lL2FjY3QvODcyNzIzNDU3IiwgIm5vbmNlIjogIkE1RkVxV0FsdU1oX2N6MnIyakc4Y1dtUDFvNjFzYXNtcjFQUXlLeG1BMmJ4R3RjIiwgInVybCI6ICJodHRwczovL2FjbWUtdjAyLmFwaS5sZXRzZW5jcnlwdC5vcmcvYWNtZS9hdXRoei12My8xODcyMDQ0MjQwMzcifQ",
+  "signature": "EnY1vg17ShiZXQYzM3ml5tWVFrn-qZs8527BCcd0qcfcHLw54Iwk60VpOTtMThd4zI28pD1MrT2cdfBgrTHgipLAc8OwJE1rJqkHom-fLV3O8h874TuuZnajgvDzSpuWflzwYblIjIMMT7PFtmbrSJplUFa9xJqZQTSAe39mdBma8tfjwHUQ2k8fCt4CtvJvjGVhuUK3d4sxav8fGfdc69Mkjm1dloJLGKFs5bHIw1wNtnwM4sWhm_ipyk0uHEH3dtNlm4AY4Y3jXe-slDZMy6aoPnF-AcgPmE132QRuATzNqvPVZVxFLM1oTB4keSzdZGN2pdknNnGbxa8H7-8jYg",
+  "payload": ""
+}
+2022-12-15 17:11:28,107:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "POST /acme/authz-v3/187204424037 HTTP/1.1" 200 397
+2022-12-15 17:11:28,107:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Date: Thu, 15 Dec 2022 12:11:29 GMT
+Content-Type: application/json
+Content-Length: 397
+Connection: keep-alive
+Boulder-Requester: 872723457
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index"
+Replay-Nonce: 20F63C5D7UsNMQk2c-1MY_MkEz5LfN0OiV2gS03d1RLlvxo
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+{
+  "identifier": {
+    "type": "dns",
+    "value": "chats.kabeersnetwork.tk"
+  },
+  "status": "pending",
+  "expires": "2022-12-22T12:11:28Z",
+  "challenges": [
+    {
+      "type": "dns-01",
+      "status": "pending",
+      "url": "https://acme-v02.api.letsencrypt.org/acme/chall-v3/187204424037/zaFslQ",
+      "token": "c9FwVTSkEEFQNUy5_Jqfxu2mbjNkI6W-M76Btg8uE-A"
+    }
+  ],
+  "wildcard": true
+}
+2022-12-15 17:11:28,108:DEBUG:acme.client:Storing nonce: 20F63C5D7UsNMQk2c-1MY_MkEz5LfN0OiV2gS03d1RLlvxo
+2022-12-15 17:11:28,108:INFO:certbot._internal.auth_handler:Performing the following challenges:
+2022-12-15 17:11:28,109:INFO:certbot._internal.auth_handler:dns-01 challenge for chats.kabeersnetwork.tk
+2022-12-15 17:11:28,110:DEBUG:certbot._internal.display.obj:Notifying user: Please deploy a DNS TXT record under the name:
+
+_acme-challenge.chats.kabeersnetwork.tk.
+
+with the following value:
+
+fSnXVcjlOsTKIdGhFwP166tM2B6U_CVF_1Lvd506rRM
+
+Before continuing, verify the TXT record has been deployed. Depending on the DNS
+provider, this may take some time, from a few seconds to multiple minutes. You can
+check if it has finished deploying with aid of online tools, such as the Google
+Admin Toolbox: https://toolbox.googleapps.com/apps/dig/#TXT/_acme-challenge.chats.kabeersnetwork.tk.
+Look for one or more bolded line(s) below the line ';ANSWER'. It should show the
+value(s) you've just added.
+

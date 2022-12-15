@@ -23,7 +23,6 @@ export default function Header() {
     return (
         <Fragment>
             <Paper
-                hidden={true}
                 color={"primary"}
                 elevation={0}
                 component="form"
@@ -66,7 +65,7 @@ export default function Header() {
                             <MenuIcon/>
                         </IconButton>
                         {!isDesktop &&
-                            <Avatar src={"/images/icon-192.png"} sx={{mr: 2}} style={{marginRight: "1rem"}}/>}
+                            <Avatar src={"/images/icon-192.png"} sx={{mr: 2}} style={{marginRight: "1rem", display: 'none'}}/>}
                         <Typography
                             hidden={isDesktop}
                             variant="h6"

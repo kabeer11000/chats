@@ -1,4 +1,4 @@
-import {useContext, useEffect, useState, Suspense} from 'react';
+import {Suspense, useContext, useEffect, useState} from 'react';
 // @ts-ignore
 import {useAuthState} from 'react-firebase-hooks/auth';
 // @ts-ignore
@@ -29,6 +29,8 @@ import {useTheme} from "@mui/material/styles";
 import {RecoilRoot} from "recoil";
 import InstallPrompt from "@/components/InstallationPrompt";
 import Head from "next/head";
+import {ConfirmProvider, useConfirm} from "material-ui-confirm";
+import {OfflinePrompt} from "@/components/OfflinePrompt";
 // import {enableIndexedDbPersistence} from "@firebase/firestore";
 
 // @ts-ignore
@@ -53,7 +55,7 @@ const M3ThemeProvider = dynamic(() => import('../styles/theme/m3/M3ThemeProvider
 // import M3ThemeProvider from '../styles/theme/m3/M3ThemeProvider';
 
 ClassNameGenerator.configure((componentName) => simpleHash(componentName));
-const SideBarMUI = dynamic(() => import('../components/SideBarMUI'), {
+const SideBar = dynamic(() => import('@/components/SideBar'), {
     loading: () => {
         // @ts-ignore
         const {isDesktop, drawerWidth} = useContext(DrawerContext);
@@ -86,10 +88,27 @@ const variants = {
     enter: {opacity: 1, x: 0, y: 0},
     exit: {opacity: 0, x: 0, y: -100},
 }
-export default function App({Component, pageProps}) {
-    const [isDev, setIsDev] = useState(false);
-    const [user, loading] = useAuthState(auth);
-    const theme = useTheme();
+const NotificationComponent = () => {
+    const [user] = useAuthState(auth);
+    const confirmDialog = useConfirm();
+    const allowNotification = async () => {
+        if (localStorage.getItem("kn.support.alert.noServiceWorkerSupport") && !("serviceWorker" in navigator)) return;
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/./serviceWorker.js").then((registration) => {
+                console.log("Service Worker registration successful with scope: ", registration.scope);
+                if (!('pushManager' in registration)) return alert("Push notifications are not supported in your browser, switch to chrome :)");
+                if ((registration.active?.state === "activated")) Notification.requestPermission().then((status) => {
+                    sessionStorage.setItem('kn.chats.notifications.status', status);
+                    if (status === "granted") registerNotifications(registration, user);
+                    else console.log("Permissions refused")
+                }).catch(console.log);
+            }, (err) => console.log("Service Worker registration failed: ", err));
+        } else {
+            if (localStorage.getItem("kn.support.alert.noServiceWorkerSupport")) return;
+            alert("your browser doesn't support modern web standards, features like notifications, and offline will be unavailable");
+            localStorage.setItem("kn.support.alert.noServiceWorkerSupport", "1");
+        }
+    }
     useEffect(() => {
         console.log("%c Re-registered service worker", 'background-color: orange; color: white');
         if (!user) return;
@@ -97,19 +116,19 @@ export default function App({Component, pageProps}) {
             email: user.email, lastActive: firebase.firestore.FieldValue.serverTimestamp(),
             photoURL: user.photoURL, user: user.toJSON()
         }, {merge: true});
-        if (localStorage.getItem("kn.support.alert.noServiceWorkerSupport") && !("serviceWorker" in navigator)) return;
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("/./serviceWorker.js").then((registration) => {
-                console.log("Service Worker registration successful with scope: ", registration.scope);
-                if (!('pushManager' in registration)) return alert("Push notifications are not supported in your browser, switch to chrome :)");
-                if ((registration.active?.state === "activated")) Notification.requestPermission().then((status) => status === "granted" ? registerNotifications(registration, user) : console.log("Permissions refused")).catch(console.log);
-            }, (err) => console.log("Service Worker registration failed: ", err));
-        } else {
-            if (localStorage.getItem("kn.support.alert.noServiceWorkerSupport")) return;
-            alert("your browser doesn't support modern web standards, features like notifications, and offline will be unavailable");
-            localStorage.setItem("kn.support.alert.noServiceWorkerSupport", "1");
-        }
+        if ((Notification.permission === "default") && (sessionStorage.getItem('kn.chats.notifications.status') !== "denied")) confirmDialog({
+            title: 'Never miss a message',
+            confirmationText: 'Accept and Allow',
+            description: 'Allow notifications to receive messages and calls alerts right on your home screen'
+        }).then(allowNotification).catch(null);
+        else console.log('notifications already granted')
     }, [user]);
+    return <></>;
+}
+export default function App({Component, pageProps}) {
+    const [isDev, setIsDev] = useState(false);
+    const [user, loading] = useAuthState(auth);
+    const theme = useTheme();
     const [persisting, setPersisting] = useState(false);
     const setupFirestorePersistence = async () => {
         if (!localStorage.getItem("kn.firestore.SDK_VERSION") || localStorage.getItem("kn.firestore.SDK_VERSION") !== firebase.SDK_VERSION) {
@@ -141,55 +160,61 @@ export default function App({Component, pageProps}) {
                 <ThemeModeProvider>
                     <ThemeSchemeProvider>
                         <M3ThemeProvider>
-                            <Head>
-                                <meta name="viewport"
-                                      content="width=device-width, height=device-height, initial-scale=1.0, interactive-widget=resizes-content"/>
-                            </Head>
-                            <NoSSR><InstallPrompt/></NoSSR>
-                            {isDev && <>
-                                <Script defer src={"/_dev/stats.js"}/>
-                                <div style={{position: 'fixed', top: 0, zIndex: 9999, left: 0}}>
-                                    <button onClick={() => {
-                                        window._KN_VALUES_VIRTUAL_KEYBOARD = !window._KN_VALUES_VIRTUAL_KEYBOARD;
-                                        window._KN_CHATS_DEV_KEYBOARD_TOGGLE(window._KN_VALUES_VIRTUAL_KEYBOARD ?? true);
-                                    }}>openVirtualKeyBoard
-                                    </button>
-                                </div>
-                            </>}
-                            {/*<Script>{` */}
-                            {/*    document.oncontextmenu = new Function("return false;")*/}
-                            {/*    document.onselectstart = new Function("return false;")*/}
-                            {/*`}</Script>*/}
-                            <NextNProgress options={{isRequired: true, showSpinner: false}} showOnShallow={true}
-                                           color={theme.palette.secondary.main} height={3}/>
-                            {loading ? (
-                                <div style={{flexGrow: 1}}>
-                                    <CircularProgress size={"xl"}/>
-                                </div>
-                            ) : user ? (
-                                <DrawerProvider>
-                                    <ChatProvider>
-                                        {/* @ts-ignore */}
-                                        <ActiveContext.Provider value={{visible: true, active: true, isDev: isDev}}>
-                                            <CapabilitiesProvider>
-                                                <SideBarMUI/>
-                                                {/*<CreateGC/>*/}
-                                                <div style={{
-                                                    display: 'flex',
-                                                    flexDirection: 'column', scrollSnapType: "y mandatory",
-                                                    height: '100%', maxHeight: '100vh'
-                                                }}>
-                                                    <div style={{height: "0rem", scrollSnapAlign: "start"}}/>
-                                                    <Suspense fallback={'loading...'}><Component {...pageProps} /></Suspense>
-                                                    <VirtualKeyBoardDEV isDev={isDev}/>
-                                                </div>
-                                            </CapabilitiesProvider>
-                                        </ActiveContext.Provider>
-                                    </ChatProvider>
-                                </DrawerProvider>
-                            ) : (
-                                <Login/>
-                            )}
+                            <ConfirmProvider defaultOptions={{confirmationButtonProps: {autoFocus: true}}}>
+                                <NotificationComponent/>
+                                <Head>
+                                    <meta name="viewport"
+                                          content="width=device-width, height=device-height, initial-scale=1.0, interactive-widget=resizes-content"/>
+                                </Head>
+                                <NoSSR><InstallPrompt/></NoSSR>
+                                {isDev && <>
+                                    <Script defer src={"/_dev/stats.js"}/>
+                                    <div style={{position: 'fixed', top: 0, zIndex: 9999, left: 0}}>
+                                        <button onClick={() => {
+                                            window._KN_VALUES_VIRTUAL_KEYBOARD = !window._KN_VALUES_VIRTUAL_KEYBOARD;
+                                            window._KN_CHATS_DEV_KEYBOARD_TOGGLE(window._KN_VALUES_VIRTUAL_KEYBOARD ?? true);
+                                        }}>openVirtualKeyBoard
+                                        </button>
+                                    </div>
+                                </>}
+                                {/*<Script>{` */}
+                                {/*    document.oncontextmenu = new Function("return false;")*/}
+                                {/*    document.onselectstart = new Function("return false;")*/}
+                                {/*`}</Script>*/}
+                                <NextNProgress options={{isRequired: true, showSpinner: false}} showOnShallow={true}
+                                               color={theme.palette.secondary.main} height={3}/>
+                                {loading ? (
+                                    <div style={{flexGrow: 1}}>
+                                        <CircularProgress size={"xl"}/>
+                                    </div>
+                                ) : user ? (
+                                    <DrawerProvider>
+                                        <ChatProvider>
+                                            {/* @ts-ignore */}
+                                            <ActiveContext.Provider value={{visible: true, active: true, isDev: isDev}}>
+                                                <CapabilitiesProvider>
+                                                    <SideBar/>
+                                                    {/*<CreateGC/>*/}
+                                                    <div style={{
+                                                        display: 'flex', position: 'relative',
+                                                        flexDirection: 'column', scrollSnapType: "y mandatory",
+                                                        height: '100%', maxHeight: '100vh'
+                                                    }}>
+                                                        <div style={{height: "0rem", scrollSnapAlign: "start"}}/>
+                                                        <Suspense fallback={'loading...'}>
+                                                            <Component {...pageProps} />
+                                                        </Suspense>
+                                                        <VirtualKeyBoardDEV isDev={isDev}/>
+                                                        <OfflinePrompt/>
+                                                    </div>
+                                                </CapabilitiesProvider>
+                                            </ActiveContext.Provider>
+                                        </ChatProvider>
+                                    </DrawerProvider>
+                                ) : (
+                                    <Login/>
+                                )}
+                            </ConfirmProvider>
                         </M3ThemeProvider>
                     </ThemeSchemeProvider>
                 </ThemeModeProvider>

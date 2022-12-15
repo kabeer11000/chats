@@ -1,5 +1,10 @@
 /** Kabeer's Network Authors, chats-serviceworker v 2.4.0:1 **/
-const isLocalhost = false; // self.location.host.split(":")[0] === "localhost";
+const _isLocalhost = () => {
+    const h = self.location.host;
+    if (h.split(":")[0] === 'localhost') return true;
+    else if (h.slice(0, '192.168'.length) === '192.168') return true;
+}
+const isLocalhost = _isLocalhost(); // self.location.host.split(":")[0] === "localhost";
 importScripts("/binaries/svg2png-wasm@1.3.4/dist/index.min.js");
 const NotificationTypes = {
     "Conversation.Message": "kn.chats.conversation.text.notification",

@@ -1,14 +1,16 @@
-import {memo, useContext} from "react";
+import {useContext, useEffect, useState} from "react";
 import {RootContext} from "./Context";
 // @ts-ignore
 import dynamic from "next/dynamic";
-import {DrawerContext} from "root-contexts";
-import {Feedback} from "@mui/icons-material";
-import {Empty} from "@/components/Empty";
 // @ts-ignore for some reason ref's weren't working with the dynamic import
 // import Box from "@mui/material/Box";
 // import {useScrollTrigger} from "@mui/material";
-// import InfiniteScroll from 'react-infinite-scroller';
+import {Empty} from "@/components/Empty";
+import {Feedback} from "@mui/icons-material";
+import {debounce} from "@/utils/debounce";
+import {useAuthState} from "react-firebase-hooks/auth";
+import {auth} from "firebase-config";
+import {connect} from "@/components/ConnectHOC";
 // @ts-ignore
 const Message = dynamic(() => import("./Message"), {
     ssr: false
@@ -23,48 +25,69 @@ const Typography = dynamic(() => import("@mui/material/Typography"));
 
 function Messages({scrollContainerRef}) {
     // const {inputFocused, text} = useContext(InputContext)
+
     const {messages, chat} = useContext(RootContext);
-    // @ts-ignore
-    // const {isDesktop, drawerWidth} = useContext(DrawerContext);
+    const [currentUser] = useAuthState(auth);
+    const [loader, setLoader] = useState({loaded: false, height: null, scroll: null});
+    const onScroll = async (e) => {
+        console.log(e.target.scrollTop)
+        if (!loader.loaded && (e.target.scrollTop <= 100)) {
+            setLoader({
+                loaded: true,
+                height: scrollContainerRef?.current.scrollHeight,
+                scroll: scrollContainerRef?.current.scrollTop
+            })
+            messages.loadMore();
+        }
+        if (loader.loaded && (e.target.scrollTop > 100)) setLoader({loaded: false, height: null, scroll: null})
+    }
+    useEffect(() => {
+        if (loader.loaded) {
+            // console.log((scrollContainerRef.current.scrollHeight - loader.height) + loader.scroll, loader.scroll, scrollContainerRef.current.scrollHeight, loader.height);
+            scrollContainerRef.current.scroll({
+                top: (scrollContainerRef.current?.scrollHeight - loader.height) + loader.scroll,
+                behavior: 'auto'
+            });
+        }
+    }, [messages.loading]);
     return (
-        <div className={"messages-container"} ref={scrollContainerRef}
-             style={{
-                 padding: "0.5rem",
-                 paddingTop: "3rem",
-                 paddingBottom: "3rem",
-                 height: '100%',
-             }}>
-            <div>
+        <div className={"messages-container"} style={{
+            padding: "0.5rem",
+            paddingTop: "3rem",
+            paddingBottom: "3rem",
+            height: '100%',
+        }} onScroll={debounce(onScroll)} ref={scrollContainerRef}>
+            <div style={{display: 'flex', flexDirection: "column"}}>
                 {
-                    // @ts-ignore
-                    (!messages.loading && messages.data) && (
+                    // @ts-ignore TODO Impure function,
+                    messages.data?.map((message, index) => {
                         // @ts-ignore
-                        messages.data.map((message, index) => {
-                            // @ts-ignore
-                            const reply = message.replyingTo ? messages.data.find(doc => doc.id === message.replyingTo) : null;
-                            const replyingTo = message.replyingTo && reply ? reply : null;
-                            return (
-                                <Message
-                                    key={message.id}
-                                    replyingTo={replyingTo}
-                                    continued={messages.data[index - 1] ? messages.data[index - 1].user === message.user : false}
-                                    message={message}
-                                />
-                            );
-                        })
-                    )
+                        const reply = message.replyingTo ? messages.data.find(doc => doc.id === message.replyingTo) : null;
+                        const replyingTo = message.replyingTo && reply ? reply : null;
+                        return (
+                            <Message
+                                key={message.id}
+                                replyingTo={replyingTo}
+                                continued={messages.data[index - 1] ? messages.data[index - 1].user === message.user : false}
+                                message={message}
+                                currentUser={currentUser}
+                            />
+                        );
+                    })
                 }
             </div>
-            {(messages.loading && !chat.loading) && <Delayed waitBeforeShow={200}><div style={{
-                display: "flex",
-                minHeight: '100%',
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                flex: 1,
-            }}>
-                <CircularProgress/>
-            </div></Delayed>}
+            {(messages.loading && !chat.loading) && <Delayed waitBeforeShow={200}>
+                <div style={{
+                    display: "flex",
+                    minHeight: '100%',
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    flex: 1,
+                }}>
+                    <CircularProgress/>
+                </div>
+            </Delayed>}
             {/* @ts-ignore */}
             {(!messages.loading && !messages.data?.length && !chat.loading) ? (
                 <Delayed waitBeforeShow={300}>
@@ -85,9 +108,16 @@ function Messages({scrollContainerRef}) {
                 </Delayed>
             ) : null}
             {/* scroll target empty div @ts-ignore */}
-            <div className={'jimmy'} style={{height: "0rem", scrollSnapAlign: "center"}} id="jimmyjohnson"/>
+            {<div className={'jimmy'} style={{height: "0rem", scrollSnapAlign: "center"}} id="jimmyjohnson"/>}
+            {/*<div style={{height: '100%', flex: 1, flexGrow: 1, marginTop: 'auto'}}/>*/}
         </div>
     )
 }
 
-export default memo(Messages);
+
+function select() {
+    const {messages, chat} = useContext(RootContext);
+    return {messages: messages, chat}
+}
+
+export default Messages;

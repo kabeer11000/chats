@@ -11,6 +11,7 @@ import InputBase from "@mui/material/InputBase"
 import useTheme from "@mui/material/styles/useTheme";
 // @ts-ignore
 import {useAuthState} from "react-firebase-hooks/auth";
+import {debounce} from "@/utils/debounce";
 // import {debounce} from "../../utils/debounce";
 // import AppBar from "@mui/material/AppBar";
 // @ts-ignore
@@ -58,7 +59,6 @@ function ChatInput() {
     });
     const isSafari = navigator ? /^((?!chrome|android).)*safari/i.test(navigator.userAgent) : false;
     useEffect(() => {
-        console.log('isSafari and !isDesktop', (isSafari && !isDesktop))
         if (isSafari && !isDesktop) window._KN_CHATS_DEV_KEYBOARD_TOGGLE(inputFocused)
     }, [inputFocused])
     return (
@@ -192,8 +192,8 @@ function ChatInput() {
                             transitionDuration: ".1s"
                         }}
                         value={text}
-                        onKeyDown={e => e.keyCode === 13 ? onSend() : null}
-                        onChange={(e) => setText(e.target.value)}
+                        onKeyDown={debounce(e => e.keyCode === 13 ? onSend() : null)}
+                        onChange={((e) => setText(e.target.value))}
                     />
                     {/* @ts-ignore */}
                     <input type="text" style={{display: "none"}}/>
@@ -204,4 +204,4 @@ function ChatInput() {
     )
 }
 
-export default memo(ChatInput);
+export default (ChatInput);
