@@ -36,6 +36,9 @@ const Reply = dynamic(() => import("@mui/icons-material/Reply"));
 
 const Message = ({message, continued, replyingTo, currentUser, onReply}) => {
     const [options, setOptions] = useState(false);
+    // useEffect(() =>
+    //     console.count(message.id + " message updated"))
+
     // const {methods: {onReply}} = useContext(RootContext); // DeleteMessage,
     const theme = useTheme();
     const messageType = message.user === currentUser.email ? 'sender' : 'receiver';
@@ -186,9 +189,7 @@ const Message = ({message, continued, replyingTo, currentUser, onReply}) => {
                         <VoiceMessage paper={!!!message.message.length} width={"100%"} url={isAudio.url}/>
                     </div>}
                     <Paper className={"message-swipe-to-reply-handle"} hidden={!!!message.message.length} style={{
-                        backgroundColor: "#000000".replace(/0/g, function () {
-                            return (~~(Math.random() * 16)).toString(16);
-                        }),// messageType === "sender" ? theme.palette.primary[theme.palette.mode === "dark" ? "dark" : "main"] : theme.palette.mode === "dark" ? theme.palette.grey["800"] : theme.palette.grey["200"],
+                        backgroundColor: messageType === "sender" ? theme.palette.primary[theme.palette.mode === "dark" ? "dark" : "main"] : theme.palette.mode === "dark" ? theme.palette.grey["800"] : theme.palette.grey["200"],
                         padding: "0.5rem 1rem",
                         borderRadius: message?.files?.length ? "0 0 1rem  1rem" : "1rem",
                         // "&:hover": {backgroundColor: 'rgb(7, 177, 77, 0.42)'}
@@ -197,6 +198,7 @@ const Message = ({message, continued, replyingTo, currentUser, onReply}) => {
                             properties={{target: '_blank', style: {color: "blue!important"}}}>
                             <Typography
                                 style={{
+                                    filter: "brightness(2)",
                                     color: theme.palette.getContrastText(messageType === "sender" ? theme.palette.primary[theme.palette.mode === "dark" ? "dark" : "main"] : theme.palette.mode === "dark" ? theme.palette.grey["800"] : theme.palette.grey["200"]),
                                     wordBreak: "break-all"
                                 }}>
@@ -214,7 +216,7 @@ const Message = ({message, continued, replyingTo, currentUser, onReply}) => {
     );
 };
 
-function select(){
+function select() {
     const {methods: {onReply}} = useContext(RootContext);
     return {onReply}
 }

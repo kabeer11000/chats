@@ -31,6 +31,13 @@ import InstallPrompt from "@/components/InstallationPrompt";
 import Head from "next/head";
 import {ConfirmProvider, useConfirm} from "material-ui-confirm";
 import {OfflinePrompt} from "@/components/OfflinePrompt";
+import {ConversationsProvider, useConversations} from "../zustand/Home";
+import Converter from "@/utils/firestoreConverter";
+import {Log} from "@/utils/Log";
+import {router} from "next/client";
+import ChatsBottomNavigation from "@/components/BottomNavigation";
+import {useRouter} from "next/router";
+import DynamicSidebarContent from "@/styles/containers/DynamicSidebarContent";
 // import {enableIndexedDbPersistence} from "@firebase/firestore";
 
 // @ts-ignore
@@ -53,6 +60,8 @@ const M3ThemeProvider = dynamic(() => import('../styles/theme/m3/M3ThemeProvider
 // import ThemeModeProvider from '../styles/theme/context/ThemeModeContext';
 // import ThemeSchemeProvider from '../styles/theme/context/ThemeSchemeContext';
 // import M3ThemeProvider from '../styles/theme/m3/M3ThemeProvider';
+
+import '@splidejs/react-splide/css';
 
 ClassNameGenerator.configure((componentName) => simpleHash(componentName));
 const SideBar = dynamic(() => import('@/components/SideBar'), {
@@ -96,16 +105,19 @@ const NotificationComponent = () => {
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("/./serviceWorker.js").then((registration) => {
                 console.log("Service Worker registration successful with scope: ", registration.scope);
-                if (!('pushManager' in registration)) return alert("Push notifications are not supported in your browser, switch to chrome :)");
+                if (!('pushManager' in registration) || !("Notification" in window)) return confirmDialog({title: "Notification Error", description: "Push notifications are not supported in your browser. switch to chromium or safari, or update your browser and try again"});
                 if ((registration.active?.state === "activated")) Notification.requestPermission().then((status) => {
                     sessionStorage.setItem('kn.chats.notifications.status', status);
                     if (status === "granted") registerNotifications(registration, user);
-                    else console.log("Permissions refused")
+                    else console.log("Permissions refused");
                 }).catch(console.log);
             }, (err) => console.log("Service Worker registration failed: ", err));
         } else {
             if (localStorage.getItem("kn.support.alert.noServiceWorkerSupport")) return;
-            alert("your browser doesn't support modern web standards, features like notifications, and offline will be unavailable");
+            await confirmDialog({
+                title: "Unsupported Browser",
+                description: "Your browser doesn't support modern web standards, features like notifications, and offline will be unavailable"
+            });
             localStorage.setItem("kn.support.alert.noServiceWorkerSupport", "1");
         }
     }
@@ -116,31 +128,33 @@ const NotificationComponent = () => {
             email: user.email, lastActive: firebase.firestore.FieldValue.serverTimestamp(),
             photoURL: user.photoURL, user: user.toJSON()
         }, {merge: true});
-        if ((Notification.permission === "default") && (sessionStorage.getItem('kn.chats.notifications.status') !== "denied")) confirmDialog({
+        if (("Notification" in window) && (Notification.permission === "default") && (sessionStorage.getItem('kn.chats.notifications.status') !== "denied")) confirmDialog({
             title: 'Never miss a message',
             confirmationText: 'Accept and Allow',
             description: 'Allow notifications to receive messages and calls alerts right on your home screen'
         }).then(allowNotification).catch(null);
-        else console.log('notifications already granted')
+        else console.log('notifications already granted');
     }, [user]);
-    return <></>;
+    return <></>;//<div style={{zIndex: 999999, position: 'fixed', top: 0}}><button onClick={() => loadConversations(user)}>Load Conversations again</button></div>;
 }
 export default function App({Component, pageProps}) {
     const [isDev, setIsDev] = useState(false);
     const [user, loading] = useAuthState(auth);
     const theme = useTheme();
     const [persisting, setPersisting] = useState(false);
+    const router = useRouter();
+
     const setupFirestorePersistence = async () => {
         if (!localStorage.getItem("kn.firestore.SDK_VERSION") || localStorage.getItem("kn.firestore.SDK_VERSION") !== firebase.SDK_VERSION) {
-            localStorage.clear();
-            const databases = await indexedDB.databases();
-            for (const database of databases) await indexedDB.deleteDatabase(database.name);
+            // localStorage.clear();
+            // const databases = await indexedDB.databases();
+            // for (const database of databases) await indexedDB.deleteDatabase(database.name);
         }
-        if (!persisting) db.enablePersistence({synchronizeTabs: true}).then(() => {
+        if (!!localStorage.getItem("kn.firestore.persisting")) db.enablePersistence({synchronizeTabs: true}).then(() => {
             console.log("offline persistence enabled");
             localStorage.setItem("kn.firestore.persisting", "1");
             localStorage.setItem("kn.firestore.SDK_VERSION", firebase.SDK_VERSION);
-            setPersisting(true)
+            setPersisting(true);
         });
     }
     useEffect(() => {
@@ -156,7 +170,7 @@ export default function App({Component, pageProps}) {
     return (
         <ErrorBoundary>
             {/*<Partytown debug={true} forward={['dataLayer.push']}/>*/}
-            <RecoilRoot>
+            {/*<RecoilRoot>*/}
                 <ThemeModeProvider>
                     <ThemeSchemeProvider>
                         <M3ThemeProvider>
@@ -165,10 +179,13 @@ export default function App({Component, pageProps}) {
                                 <Head>
                                     <meta name="viewport"
                                           content="width=device-width, height=device-height, initial-scale=1.0, interactive-widget=resizes-content"/>
+                                    <title>Chats</title>
                                 </Head>
                                 <NoSSR><InstallPrompt/></NoSSR>
+                                {/*<Script defer src={"https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"}/>*/}
                                 {isDev && <>
                                     <Script defer src={"/_dev/stats.js"}/>
+                                    <Script defer src="//console.re/connector.js" data-channel="kabeerchats-dev" id="consolerescript"></Script>
                                     <div style={{position: 'fixed', top: 0, zIndex: 9999, left: 0}}>
                                         <button onClick={() => {
                                             window._KN_VALUES_VIRTUAL_KEYBOARD = !window._KN_VALUES_VIRTUAL_KEYBOARD;
@@ -189,12 +206,11 @@ export default function App({Component, pageProps}) {
                                     </div>
                                 ) : user ? (
                                     <DrawerProvider>
-                                        <ChatProvider>
+                                        <ConversationsProvider>
                                             {/* @ts-ignore */}
                                             <ActiveContext.Provider value={{visible: true, active: true, isDev: isDev}}>
                                                 <CapabilitiesProvider>
                                                     <SideBar/>
-                                                    {/*<CreateGC/>*/}
                                                     <div style={{
                                                         display: 'flex', position: 'relative',
                                                         flexDirection: 'column', scrollSnapType: "y mandatory",
@@ -206,10 +222,11 @@ export default function App({Component, pageProps}) {
                                                         </Suspense>
                                                         <VirtualKeyBoardDEV isDev={isDev}/>
                                                         <OfflinePrompt/>
+                                                        {(['/home', '/', '/feed', '/profile'].includes(router.pathname)) && <DynamicSidebarContent><ChatsBottomNavigation/></DynamicSidebarContent>}
                                                     </div>
                                                 </CapabilitiesProvider>
                                             </ActiveContext.Provider>
-                                        </ChatProvider>
+                                        </ConversationsProvider>
                                     </DrawerProvider>
                                 ) : (
                                     <Login/>
@@ -218,7 +235,7 @@ export default function App({Component, pageProps}) {
                         </M3ThemeProvider>
                     </ThemeSchemeProvider>
                 </ThemeModeProvider>
-            </RecoilRoot>
+            {/*</RecoilRoot>*/}
         </ErrorBoundary>
     )
 }

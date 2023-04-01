@@ -1,100 +1,323 @@
-2022-12-15 17:10:06,215:DEBUG:certbot._internal.main:certbot version: 1.31.0
-2022-12-15 17:10:06,216:DEBUG:certbot._internal.main:Location of certbot entry point: /usr/local/bin/certbot
-2022-12-15 17:10:06,216:DEBUG:certbot._internal.main:Arguments: ['--work-dir', '/Users/asadrizvi/Documents/Projects/kabeer-chats/deployment/ssl/work', '--config-dir', '/Users/asadrizvi/Documents/Projects/kabeer-chats/deployment/ssl/config/', '--logs-dir', '/Users/asadrizvi/Documents/Projects/kabeer-chats/deployment/ssl/logs/']
-2022-12-15 17:10:06,216:DEBUG:certbot._internal.main:Discovered plugins: PluginsRegistry(PluginEntryPoint#apache,PluginEntryPoint#manual,PluginEntryPoint#nginx,PluginEntryPoint#null,PluginEntryPoint#standalone,PluginEntryPoint#webroot)
-2022-12-15 17:10:06,256:DEBUG:certbot._internal.log:Root logging level set at 30
-2022-12-15 17:10:06,258:DEBUG:certbot._internal.plugins.selection:Requested authenticator None and installer None
-2022-12-15 17:10:06,733:DEBUG:certbot_apache._internal.configurator:Apache version is 2.4.53
-2022-12-15 17:10:07,205:WARNING:certbot_apache._internal.configurator:Could not find ssl_module; not disabling session tickets.
-2022-12-15 17:10:07,213:DEBUG:certbot_apache._internal.configurator:Encountered error:
+2022-12-15 17:10:54,507:DEBUG:certbot._internal.main:certbot version: 1.31.0
+2022-12-15 17:10:54,507:DEBUG:certbot._internal.main:Location of certbot entry point: /usr/local/bin/certbot
+2022-12-15 17:10:54,507:DEBUG:certbot._internal.main:Arguments: ['--work-dir', '/Users/asadrizvi/Documents/Projects/kabeer-chats/deployment/ssl/work', '--config-dir', '/Users/asadrizvi/Documents/Projects/kabeer-chats/deployment/ssl/config/', '--logs-dir', '/Users/asadrizvi/Documents/Projects/kabeer-chats/deployment/ssl/logs/', '--manual']
+2022-12-15 17:10:54,507:DEBUG:certbot._internal.main:Discovered plugins: PluginsRegistry(PluginEntryPoint#apache,PluginEntryPoint#manual,PluginEntryPoint#nginx,PluginEntryPoint#null,PluginEntryPoint#standalone,PluginEntryPoint#webroot)
+2022-12-15 17:10:54,549:DEBUG:certbot._internal.log:Root logging level set at 30
+2022-12-15 17:10:54,550:DEBUG:certbot._internal.plugins.selection:Requested authenticator manual and installer None
+2022-12-15 17:10:54,554:DEBUG:certbot._internal.plugins.selection:Single candidate plugin: * manual
+Description: Manual configuration or run your own shell scripts
+Interfaces: Authenticator, Plugin
+Entry point: manual = certbot._internal.plugins.manual:Authenticator
+Initialized: <certbot._internal.plugins.manual.Authenticator object at 0x10d8dd690>
+Prep: True
+2022-12-15 17:10:54,554:DEBUG:certbot._internal.plugins.selection:Selected authenticator <certbot._internal.plugins.manual.Authenticator object at 0x10d8dd690> and installer None
+2022-12-15 17:10:54,554:INFO:certbot._internal.plugins.selection:Plugins selected: Authenticator manual, Installer None
+2022-12-15 17:11:01,864:DEBUG:acme.client:Sending GET request to https://acme-v02.api.letsencrypt.org/directory.
+2022-12-15 17:11:01,921:DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): acme-v02.api.letsencrypt.org:443
+2022-12-15 17:11:02,839:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "GET /directory HTTP/1.1" 200 659
+2022-12-15 17:11:02,840:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Date: Thu, 15 Dec 2022 12:11:03 GMT
+Content-Type: application/json
+Content-Length: 659
+Connection: keep-alive
+Cache-Control: public, max-age=0, no-cache
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+{
+  "keyChange": "https://acme-v02.api.letsencrypt.org/acme/key-change",
+  "meta": {
+    "caaIdentities": [
+      "letsencrypt.org"
+    ],
+    "termsOfService": "https://letsencrypt.org/documents/LE-SA-v1.3-September-21-2022.pdf",
+    "website": "https://letsencrypt.org"
+  },
+  "newAccount": "https://acme-v02.api.letsencrypt.org/acme/new-acct",
+  "newNonce": "https://acme-v02.api.letsencrypt.org/acme/new-nonce",
+  "newOrder": "https://acme-v02.api.letsencrypt.org/acme/new-order",
+  "revokeCert": "https://acme-v02.api.letsencrypt.org/acme/revoke-cert",
+  "v53XhYG8H3E": "https://community.letsencrypt.org/t/adding-random-entries-to-the-directory/33417"
+}
+2022-12-15 17:11:07,281:DEBUG:acme.client:Requesting fresh nonce
+2022-12-15 17:11:07,282:DEBUG:acme.client:Sending HEAD request to https://acme-v02.api.letsencrypt.org/acme/new-nonce.
+2022-12-15 17:11:07,615:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "HEAD /acme/new-nonce HTTP/1.1" 200 0
+2022-12-15 17:11:07,616:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Date: Thu, 15 Dec 2022 12:11:08 GMT
+Connection: keep-alive
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index"
+Replay-Nonce: 20F6Hya0DuPVqGU7s6SX6sRKtUNakqC3Ylt4tpNmfHcugHA
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+
+2022-12-15 17:11:07,617:DEBUG:acme.client:Storing nonce: 20F6Hya0DuPVqGU7s6SX6sRKtUNakqC3Ylt4tpNmfHcugHA
+2022-12-15 17:11:07,617:DEBUG:acme.client:JWS payload:
+b'{\n  "contact": [\n    "mailto:kabeer@kabeersnetwork.tk"\n  ],\n  "termsOfServiceAgreed": true\n}'
+2022-12-15 17:11:07,620:DEBUG:acme.client:Sending POST request to https://acme-v02.api.letsencrypt.org/acme/new-acct:
+{
+  "protected": "eyJhbGciOiAiUlMyNTYiLCAiandrIjogeyJuIjogIjFMWjdOWE9pWE45QUVqS3hjRHhISXEtV1Y2a3VLZDl5WVE2MVd5TEJkbHpNU002cmJzRVhSWHNSbFRndWp6U1ltaHpOQVRrbHpiOFo2MFpaSXBRTXF5TzhjWm9Nem5XVnRrVVh6NGJGT2tkSjU0Q3dzaDBSOUltVkppTVNpVlpibTlpYzFfQ0tPcF9BVVJmUWtOQXZmNlZIeHp6YmM0QUpUSnFPSDNqRnVCcjBMWmY2TFdvQjZQZ05Xc3lMWEVqQWdvd0N1Nl85U2JNVW5iNUlGRnJmSmdvZHE3ZENqXzNjVmhGNzNtM0lNXzBtV2thanFSTjgxVnNueDN5cHJvY3dnYmdRMnFSVU1DU1JfUUlrSTRjeGp3R1hSMXhkOXhVNHhQZWxtYk52MzM4TXJhTGdhR1U0SlV3SUMwcmVCa2RZWV9VZXpQWldUNnU2SFFvdGRzUVd5USIsICJlIjogIkFRQUIiLCAia3R5IjogIlJTQSJ9LCAibm9uY2UiOiAiMjBGNkh5YTBEdVBWcUdVN3M2U1g2c1JLdFVOYWtxQzNZbHQ0dHBObWZIY3VnSEEiLCAidXJsIjogImh0dHBzOi8vYWNtZS12MDIuYXBpLmxldHNlbmNyeXB0Lm9yZy9hY21lL25ldy1hY2N0In0",
+  "signature": "y5DyQJMQdYvjf3h8O5yoR97FSF50BwHRihCMtHlpslvwGmY4wDPdlg6C6LaTCOnT7FkE14Srw3-GtBrGWvN15fcOymrdIOiEhZrmsjk_IkzFC5dZ6eC2SEe2wWE0rnsstd8e0ryziad5zuv5LVDfGA_-CJ3eKcksP3yFeKqEEXJvDIfBt_xOPuxh5TBzITNE3TNOVGNgnMD8NNhlrns45Sy-KeuPFx0DabbZQLoR5EsLcvNuXYOW3Tvwe7rHjj-VMTjWpKgwNhLu8fc3VXzrc5WbXRxS882vQvbwyW8-kLpaefCM6bftbkZiW-2OUKv4ggGx11VMk9IKvBTaUe0ZCA",
+  "payload": "ewogICJjb250YWN0IjogWwogICAgIm1haWx0bzprYWJlZXJAa2FiZWVyc25ldHdvcmsudGsiCiAgXSwKICAidGVybXNPZlNlcnZpY2VBZ3JlZWQiOiB0cnVlCn0"
+}
+2022-12-15 17:11:07,930:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "POST /acme/new-acct HTTP/1.1" 201 567
+2022-12-15 17:11:07,931:DEBUG:acme.client:Received response:
+HTTP 201
+Server: nginx
+Date: Thu, 15 Dec 2022 12:11:08 GMT
+Content-Type: application/json
+Content-Length: 567
+Connection: keep-alive
+Boulder-Requester: 872723457
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index", <https://letsencrypt.org/documents/LE-SA-v1.3-September-21-2022.pdf>;rel="terms-of-service"
+Location: https://acme-v02.api.letsencrypt.org/acme/acct/872723457
+Replay-Nonce: 20F65Zi-9n-qZuMhCvF0U_Kc2SylLsg4nXDTrqF1omxbFD4
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+{
+  "key": {
+    "kty": "RSA",
+    "n": "1LZ7NXOiXN9AEjKxcDxHIq-WV6kuKd9yYQ61WyLBdlzMSM6rbsEXRXsRlTgujzSYmhzNATklzb8Z60ZZIpQMqyO8cZoMznWVtkUXz4bFOkdJ54Cwsh0R9ImVJiMSiVZbm9ic1_CKOp_AURfQkNAvf6VHxzzbc4AJTJqOH3jFuBr0LZf6LWoB6PgNWsyLXEjAgowCu6_9SbMUnb5IFFrfJgodq7dCj_3cVhF73m3IM_0mWkajqRN81Vsnx3yprocwgbgQ2qRUMCSR_QIkI4cxjwGXR1xd9xU4xPelmbNv338MraLgaGU4JUwIC0reBkdYY_UezPZWT6u6HQotdsQWyQ",
+    "e": "AQAB"
+  },
+  "contact": [
+    "mailto:kabeer@kabeersnetwork.tk"
+  ],
+  "initialIp": "39.50.230.226",
+  "createdAt": "2022-12-15T12:11:08.875974771Z",
+  "status": "valid"
+}
+2022-12-15 17:11:07,931:DEBUG:acme.client:Storing nonce: 20F65Zi-9n-qZuMhCvF0U_Kc2SylLsg4nXDTrqF1omxbFD4
+2022-12-15 17:11:14,430:DEBUG:certbot._internal.display.obj:Notifying user: Account registered.
+2022-12-15 17:11:14,430:DEBUG:certbot._internal.main:Picked account: <Account(RegistrationResource(body=Registration(key=JWKRSA(key=<ComparableRSAKey(<cryptography.hazmat.backends.openssl.rsa._RSAPublicKey object at 0x10d92a7d0>)>), contact=('mailto:kabeer@kabeersnetwork.tk',), agreement=None, status='valid', terms_of_service_agreed=None, only_return_existing=None, external_account_binding=None), uri='https://acme-v02.api.letsencrypt.org/acme/acct/872723457', new_authzr_uri=None, terms_of_service='https://letsencrypt.org/documents/LE-SA-v1.3-September-21-2022.pdf'), 626112ce8a6877dfd440797234b4778e, Meta(creation_dt=datetime.datetime(2022, 12, 15, 12, 11, 7, tzinfo=<UTC>), creation_host='50.40.168.192.in-addr.arpa', register_to_eff='kabeer@kabeersnetwork.tk'))>
+2022-12-15 17:11:14,431:DEBUG:certbot.display.ops:No installer, picking names manually
+2022-12-15 17:11:27,186:DEBUG:certbot._internal.display.obj:Notifying user: Requesting a certificate for *.chats.kabeersnetwork.tk
+2022-12-15 17:11:27,436:DEBUG:certbot.crypto_util:Generating RSA key (2048 bits): /Users/asadrizvi/Documents/Projects/kabeer-chats/deployment/ssl/config/keys/0000_key-certbot.pem
+2022-12-15 17:11:27,445:DEBUG:certbot.crypto_util:Creating CSR: /Users/asadrizvi/Documents/Projects/kabeer-chats/deployment/ssl/config/csr/0000_csr-certbot.pem
+2022-12-15 17:11:27,447:DEBUG:acme.client:JWS payload:
+b'{\n  "identifiers": [\n    {\n      "type": "dns",\n      "value": "*.chats.kabeersnetwork.tk"\n    }\n  ]\n}'
+2022-12-15 17:11:27,448:DEBUG:acme.client:Sending POST request to https://acme-v02.api.letsencrypt.org/acme/new-order:
+{
+  "protected": "eyJhbGciOiAiUlMyNTYiLCAia2lkIjogImh0dHBzOi8vYWNtZS12MDIuYXBpLmxldHNlbmNyeXB0Lm9yZy9hY21lL2FjY3QvODcyNzIzNDU3IiwgIm5vbmNlIjogIjIwRjY1WmktOW4tcVp1TWhDdkYwVV9LYzJTeWxMc2c0blhEVHJxRjFvbXhiRkQ0IiwgInVybCI6ICJodHRwczovL2FjbWUtdjAyLmFwaS5sZXRzZW5jcnlwdC5vcmcvYWNtZS9uZXctb3JkZXIifQ",
+  "signature": "gxG1zU0wRSW-Bp__QTl2tK0s2TTVA-bTn4Rttkj8GuYDFgu-l_PNynD8F7d_zR_2GVe-EelN1l6CUkq2ektqag6NNoQocvO3X1Tw46XZ3IU05AiW6XG_PCG2YT7f-YHdRdW3x0SbHDl-gMcWvOsACcXoUxoSLfuZmnnlcuf0SY8lg7s2d0iR-uEtAX8Drk3_Rcz7vCAJGS3b_9w509Nv22KLOBa3_bW-9w-zsvIPZYpax2EeN2iLQxf2BUBaFADEQ8_lsWqol2x-_gxT27p26D_AZXxFbmpL1htV9sxGq4nimi8FxEIeAk5zU_FKGtWf8twYd77umIJr6l_DVALA2A",
+  "payload": "ewogICJpZGVudGlmaWVycyI6IFsKICAgIHsKICAgICAgInR5cGUiOiAiZG5zIiwKICAgICAgInZhbHVlIjogIiouY2hhdHMua2FiZWVyc25ldHdvcmsudGsiCiAgICB9CiAgXQp9"
+}
+2022-12-15 17:11:27,789:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "POST /acme/new-order HTTP/1.1" 201 350
+2022-12-15 17:11:27,790:DEBUG:acme.client:Received response:
+HTTP 201
+Server: nginx
+Date: Thu, 15 Dec 2022 12:11:28 GMT
+Content-Type: application/json
+Content-Length: 350
+Connection: keep-alive
+Boulder-Requester: 872723457
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index"
+Location: https://acme-v02.api.letsencrypt.org/acme/order/872723457/152872807217
+Replay-Nonce: A5FEqWAluMh_cz2r2jG8cWmP1o61sasmr1PQyKxmA2bxGtc
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+{
+  "status": "pending",
+  "expires": "2022-12-22T12:11:28Z",
+  "identifiers": [
+    {
+      "type": "dns",
+      "value": "*.chats.kabeersnetwork.tk"
+    }
+  ],
+  "authorizations": [
+    "https://acme-v02.api.letsencrypt.org/acme/authz-v3/187204424037"
+  ],
+  "finalize": "https://acme-v02.api.letsencrypt.org/acme/finalize/872723457/152872807217"
+}
+2022-12-15 17:11:27,791:DEBUG:acme.client:Storing nonce: A5FEqWAluMh_cz2r2jG8cWmP1o61sasmr1PQyKxmA2bxGtc
+2022-12-15 17:11:27,792:DEBUG:acme.client:JWS payload:
+b''
+2022-12-15 17:11:27,794:DEBUG:acme.client:Sending POST request to https://acme-v02.api.letsencrypt.org/acme/authz-v3/187204424037:
+{
+  "protected": "eyJhbGciOiAiUlMyNTYiLCAia2lkIjogImh0dHBzOi8vYWNtZS12MDIuYXBpLmxldHNlbmNyeXB0Lm9yZy9hY21lL2FjY3QvODcyNzIzNDU3IiwgIm5vbmNlIjogIkE1RkVxV0FsdU1oX2N6MnIyakc4Y1dtUDFvNjFzYXNtcjFQUXlLeG1BMmJ4R3RjIiwgInVybCI6ICJodHRwczovL2FjbWUtdjAyLmFwaS5sZXRzZW5jcnlwdC5vcmcvYWNtZS9hdXRoei12My8xODcyMDQ0MjQwMzcifQ",
+  "signature": "EnY1vg17ShiZXQYzM3ml5tWVFrn-qZs8527BCcd0qcfcHLw54Iwk60VpOTtMThd4zI28pD1MrT2cdfBgrTHgipLAc8OwJE1rJqkHom-fLV3O8h874TuuZnajgvDzSpuWflzwYblIjIMMT7PFtmbrSJplUFa9xJqZQTSAe39mdBma8tfjwHUQ2k8fCt4CtvJvjGVhuUK3d4sxav8fGfdc69Mkjm1dloJLGKFs5bHIw1wNtnwM4sWhm_ipyk0uHEH3dtNlm4AY4Y3jXe-slDZMy6aoPnF-AcgPmE132QRuATzNqvPVZVxFLM1oTB4keSzdZGN2pdknNnGbxa8H7-8jYg",
+  "payload": ""
+}
+2022-12-15 17:11:28,107:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "POST /acme/authz-v3/187204424037 HTTP/1.1" 200 397
+2022-12-15 17:11:28,107:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Date: Thu, 15 Dec 2022 12:11:29 GMT
+Content-Type: application/json
+Content-Length: 397
+Connection: keep-alive
+Boulder-Requester: 872723457
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index"
+Replay-Nonce: 20F63C5D7UsNMQk2c-1MY_MkEz5LfN0OiV2gS03d1RLlvxo
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+{
+  "identifier": {
+    "type": "dns",
+    "value": "chats.kabeersnetwork.tk"
+  },
+  "status": "pending",
+  "expires": "2022-12-22T12:11:28Z",
+  "challenges": [
+    {
+      "type": "dns-01",
+      "status": "pending",
+      "url": "https://acme-v02.api.letsencrypt.org/acme/chall-v3/187204424037/zaFslQ",
+      "token": "c9FwVTSkEEFQNUy5_Jqfxu2mbjNkI6W-M76Btg8uE-A"
+    }
+  ],
+  "wildcard": true
+}
+2022-12-15 17:11:28,108:DEBUG:acme.client:Storing nonce: 20F63C5D7UsNMQk2c-1MY_MkEz5LfN0OiV2gS03d1RLlvxo
+2022-12-15 17:11:28,108:INFO:certbot._internal.auth_handler:Performing the following challenges:
+2022-12-15 17:11:28,109:INFO:certbot._internal.auth_handler:dns-01 challenge for chats.kabeersnetwork.tk
+2022-12-15 17:11:28,110:DEBUG:certbot._internal.display.obj:Notifying user: Please deploy a DNS TXT record under the name:
+
+_acme-challenge.chats.kabeersnetwork.tk.
+
+with the following value:
+
+fSnXVcjlOsTKIdGhFwP166tM2B6U_CVF_1Lvd506rRM
+
+Before continuing, verify the TXT record has been deployed. Depending on the DNS
+provider, this may take some time, from a few seconds to multiple minutes. You can
+check if it has finished deploying with aid of online tools, such as the Google
+Admin Toolbox: https://toolbox.googleapps.com/apps/dig/#TXT/_acme-challenge.chats.kabeersnetwork.tk.
+Look for one or more bolded line(s) below the line ';ANSWER'. It should show the
+value(s) you've just added.
+
+2022-12-15 17:11:42,401:DEBUG:acme.client:JWS payload:
+b'{}'
+2022-12-15 17:11:42,403:DEBUG:acme.client:Sending POST request to https://acme-v02.api.letsencrypt.org/acme/chall-v3/187204424037/zaFslQ:
+{
+  "protected": "eyJhbGciOiAiUlMyNTYiLCAia2lkIjogImh0dHBzOi8vYWNtZS12MDIuYXBpLmxldHNlbmNyeXB0Lm9yZy9hY21lL2FjY3QvODcyNzIzNDU3IiwgIm5vbmNlIjogIjIwRjYzQzVEN1VzTk1RazJjLTFNWV9Na0V6NUxmTjBPaVYyZ1MwM2QxUkxsdnhvIiwgInVybCI6ICJodHRwczovL2FjbWUtdjAyLmFwaS5sZXRzZW5jcnlwdC5vcmcvYWNtZS9jaGFsbC12My8xODcyMDQ0MjQwMzcvemFGc2xRIn0",
+  "signature": "SF06X4J1jelXoSBm94l9n0W4kU2v_XwYH6iMsM6y7VPSHK13wM-DrGYsvwuT45gdRyWWrJy6M2LRU_6I-gnGngM0eMgvnmPijpyg9uVOguJO_FUOQjsZLo2vLidsQroVgVl0h3kM0HcKdV4kJTjO1Ljczal042Pc3p25N6pMRKXZtbkV5kR6ssTNiV7xNEcYw14mQO9RbK7TnkKvGNGdFiVOvfL-gK4SAwINBNDwPTLF5JVf42I11PJkBKgguuWyVgQqapWLN3I3Y3w7aoDE-hhyObwsMmmkqiNObPIkkKgPFzNk4lyuIkP_RBY9_siaqstA6G_bVX55LmYsrufFqw",
+  "payload": "e30"
+}
+2022-12-15 17:11:42,711:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "POST /acme/chall-v3/187204424037/zaFslQ HTTP/1.1" 200 186
+2022-12-15 17:11:42,712:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Date: Thu, 15 Dec 2022 12:11:43 GMT
+Content-Type: application/json
+Content-Length: 186
+Connection: keep-alive
+Boulder-Requester: 872723457
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index", <https://acme-v02.api.letsencrypt.org/acme/authz-v3/187204424037>;rel="up"
+Location: https://acme-v02.api.letsencrypt.org/acme/chall-v3/187204424037/zaFslQ
+Replay-Nonce: 20F65RaikIcGGIn8QX7-2b21w7onYNcANBguO5x92SE-Q7k
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+{
+  "type": "dns-01",
+  "status": "pending",
+  "url": "https://acme-v02.api.letsencrypt.org/acme/chall-v3/187204424037/zaFslQ",
+  "token": "c9FwVTSkEEFQNUy5_Jqfxu2mbjNkI6W-M76Btg8uE-A"
+}
+2022-12-15 17:11:42,712:DEBUG:acme.client:Storing nonce: 20F65RaikIcGGIn8QX7-2b21w7onYNcANBguO5x92SE-Q7k
+2022-12-15 17:11:42,712:INFO:certbot._internal.auth_handler:Waiting for verification...
+2022-12-15 17:11:43,713:DEBUG:acme.client:JWS payload:
+b''
+2022-12-15 17:11:43,715:DEBUG:acme.client:Sending POST request to https://acme-v02.api.letsencrypt.org/acme/authz-v3/187204424037:
+{
+  "protected": "eyJhbGciOiAiUlMyNTYiLCAia2lkIjogImh0dHBzOi8vYWNtZS12MDIuYXBpLmxldHNlbmNyeXB0Lm9yZy9hY21lL2FjY3QvODcyNzIzNDU3IiwgIm5vbmNlIjogIjIwRjY1UmFpa0ljR0dJbjhRWDctMmIyMXc3b25ZTmNBTkJndU81eDkyU0UtUTdrIiwgInVybCI6ICJodHRwczovL2FjbWUtdjAyLmFwaS5sZXRzZW5jcnlwdC5vcmcvYWNtZS9hdXRoei12My8xODcyMDQ0MjQwMzcifQ",
+  "signature": "1Aul8hkih6HiGhSVZNwwpgyvK8EKIVtABsRRV_ysjXVV6saSzsuv9hzIFu2fIT0mqO7GpKkUb9lpXTmdkaP4sKwZIyiuJLLcvWUPz-GplRMVZiNNjWHzXubQBvrOqYYdHQJQxTg3xqAiY-sQlsH6ZHJcHZrumKl5aLYRpR9cSl5-gIVvBRrfQK8gCjpbKTFf-MC4aVi3ip5A18B2FPDK6yBEUM4EMEW3apD2DAleLCJGuGjCAVcnokTKouSmtkeW6bPsqu9eu-49X3GGUb94wPXfk3-P7cyy-7EgGx11EwMr3Q2hk1w9dezsYIVTU8Bb1alBFfwKdMkydlTdDnqK3Q",
+  "payload": ""
+}
+2022-12-15 17:11:44,019:DEBUG:urllib3.connectionpool:https://acme-v02.api.letsencrypt.org:443 "POST /acme/authz-v3/187204424037 HTTP/1.1" 200 631
+2022-12-15 17:11:44,020:DEBUG:acme.client:Received response:
+HTTP 200
+Server: nginx
+Date: Thu, 15 Dec 2022 12:11:44 GMT
+Content-Type: application/json
+Content-Length: 631
+Connection: keep-alive
+Boulder-Requester: 872723457
+Cache-Control: public, max-age=0, no-cache
+Link: <https://acme-v02.api.letsencrypt.org/directory>;rel="index"
+Replay-Nonce: 853F44irvq-TEWVv9e_qS-NVzXwwMxyw49DwNdkTmzh7--4
+X-Frame-Options: DENY
+Strict-Transport-Security: max-age=604800
+
+{
+  "identifier": {
+    "type": "dns",
+    "value": "chats.kabeersnetwork.tk"
+  },
+  "status": "invalid",
+  "expires": "2022-12-22T12:11:28Z",
+  "challenges": [
+    {
+      "type": "dns-01",
+      "status": "invalid",
+      "error": {
+        "type": "urn:ietf:params:acme:error:unauthorized",
+        "detail": "No TXT record found at _acme-challenge.chats.kabeersnetwork.tk",
+        "status": 403
+      },
+      "url": "https://acme-v02.api.letsencrypt.org/acme/chall-v3/187204424037/zaFslQ",
+      "token": "c9FwVTSkEEFQNUy5_Jqfxu2mbjNkI6W-M76Btg8uE-A",
+      "validated": "2022-12-15T12:11:43Z"
+    }
+  ],
+  "wildcard": true
+}
+2022-12-15 17:11:44,021:DEBUG:acme.client:Storing nonce: 853F44irvq-TEWVv9e_qS-NVzXwwMxyw49DwNdkTmzh7--4
+2022-12-15 17:11:44,021:INFO:certbot._internal.auth_handler:Challenge failed for domain chats.kabeersnetwork.tk
+2022-12-15 17:11:44,021:INFO:certbot._internal.auth_handler:dns-01 challenge for chats.kabeersnetwork.tk
+2022-12-15 17:11:44,022:DEBUG:certbot._internal.display.obj:Notifying user: 
+Certbot failed to authenticate some domains (authenticator: manual). The Certificate Authority reported these problems:
+  Domain: chats.kabeersnetwork.tk
+  Type:   unauthorized
+  Detail: No TXT record found at _acme-challenge.chats.kabeersnetwork.tk
+
+Hint: The Certificate Authority failed to verify the manually created DNS TXT records. Ensure that you created these in the correct location, or try waiting longer for DNS propagation on the next attempt.
+
+2022-12-15 17:11:44,028:DEBUG:certbot._internal.error_handler:Encountered exception:
 Traceback (most recent call last):
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot_apache/_internal/configurator.py", line 394, in prepare
-    util.lock_dir_until_exit(self.options.server_root)
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/util.py", line 157, in lock_dir_until_exit
-    _LOCKS[dir_path] = lock.lock_dir(dir_path)
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/lock.py", line 259, in lock_dir
-    return LockFile(os.path.join(dir_path, '.certbot.lock'))
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/lock.py", line 45, in __init__
-    self.acquire()
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/lock.py", line 60, in acquire
-    self._lock_mechanism.acquire()
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/lock.py", line 110, in acquire
-    fd = filesystem.open(self._path, os.O_CREAT | os.O_WRONLY, 0o600)
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/compat/filesystem.py", line 211, in open
-    return os.open(file_path, flags, mode)
-PermissionError: [Errno 13] Permission denied: '/etc/apache2/.certbot.lock'
-2022-12-15 17:10:07,223:DEBUG:certbot._internal.plugins.disco:Other error:(PluginEntryPoint#apache): Unable to create a lock file in /etc/apache2. Are you running Certbot with sufficient privileges to modify your Apache configuration?
+  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/auth_handler.py", line 106, in handle_authorizations
+    self._poll_authorizations(authzrs, max_retries, best_effort)
+  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/auth_handler.py", line 206, in _poll_authorizations
+    raise errors.AuthorizationError('Some challenges have failed.')
+certbot.errors.AuthorizationError: Some challenges have failed.
+
+2022-12-15 17:11:44,029:DEBUG:certbot._internal.error_handler:Calling registered functions
+2022-12-15 17:11:44,029:INFO:certbot._internal.auth_handler:Cleaning up challenges
+2022-12-15 17:11:44,029:DEBUG:certbot._internal.log:Exiting abnormally:
 Traceback (most recent call last):
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot_apache/_internal/configurator.py", line 394, in prepare
-    util.lock_dir_until_exit(self.options.server_root)
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/util.py", line 157, in lock_dir_until_exit
-    _LOCKS[dir_path] = lock.lock_dir(dir_path)
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/lock.py", line 259, in lock_dir
-    return LockFile(os.path.join(dir_path, '.certbot.lock'))
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/lock.py", line 45, in __init__
-    self.acquire()
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/lock.py", line 60, in acquire
-    self._lock_mechanism.acquire()
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/lock.py", line 110, in acquire
-    fd = filesystem.open(self._path, os.O_CREAT | os.O_WRONLY, 0o600)
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/compat/filesystem.py", line 211, in open
-    return os.open(file_path, flags, mode)
-PermissionError: [Errno 13] Permission denied: '/etc/apache2/.certbot.lock'
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/plugins/disco.py", line 160, in prepare
-    self._initialized.prepare()
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot_apache/_internal/configurator.py", line 397, in prepare
-    raise errors.PluginError(
-certbot.errors.PluginError: Unable to create a lock file in /etc/apache2. Are you running Certbot with sufficient privileges to modify your Apache configuration?
-2022-12-15 17:10:07,267:ERROR:certbot.util:Error while running nginx -c /usr/local/etc/nginx/nginx.conf -t.
-
-nginx: [alert] could not open error log file: open() "/usr/local/nginx/logs/error.log" failed (13: Permission denied)
-2022/12/15 17:10:07 [emerg] 51479#0: open() "/usr/local/etc/nginx/nginx.conf" failed (2: No such file or directory)
-nginx: configuration file /usr/local/etc/nginx/nginx.conf test failed
-
-2022-12-15 17:10:07,268:DEBUG:certbot._internal.plugins.disco:Misconfigured PluginEntryPoint#nginx: Error while running nginx -c /usr/local/etc/nginx/nginx.conf -t.
-
-nginx: [alert] could not open error log file: open() "/usr/local/nginx/logs/error.log" failed (13: Permission denied)
-2022/12/15 17:10:07 [emerg] 51479#0: open() "/usr/local/etc/nginx/nginx.conf" failed (2: No such file or directory)
-nginx: configuration file /usr/local/etc/nginx/nginx.conf test failed
-Traceback (most recent call last):
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot_nginx/_internal/configurator.py", line 999, in config_test
-    util.run_script([self.conf('ctl'), "-c", self.nginx_conf, "-t"])
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/util.py", line 121, in run_script
-    raise errors.SubprocessError(msg)
-certbot.errors.SubprocessError: Error while running nginx -c /usr/local/etc/nginx/nginx.conf -t.
-
-nginx: [alert] could not open error log file: open() "/usr/local/nginx/logs/error.log" failed (13: Permission denied)
-2022/12/15 17:10:07 [emerg] 51479#0: open() "/usr/local/etc/nginx/nginx.conf" failed (2: No such file or directory)
-nginx: configuration file /usr/local/etc/nginx/nginx.conf test failed
-
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/plugins/disco.py", line 160, in prepare
-    self._initialized.prepare()
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot_nginx/_internal/configurator.py", line 199, in prepare
-    self.config_test()
-  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot_nginx/_internal/configurator.py", line 1001, in config_test
-    raise errors.MisconfigurationError(str(err))
-certbot.errors.MisconfigurationError: Error while running nginx -c /usr/local/etc/nginx/nginx.conf -t.
-
-nginx: [alert] could not open error log file: open() "/usr/local/nginx/logs/error.log" failed (13: Permission denied)
-2022/12/15 17:10:07 [emerg] 51479#0: open() "/usr/local/etc/nginx/nginx.conf" failed (2: No such file or directory)
-nginx: configuration file /usr/local/etc/nginx/nginx.conf test failed
-
-2022-12-15 17:10:07,270:DEBUG:certbot._internal.plugins.selection:Single candidate plugin: * nginx
-Description: Nginx Web Server plugin
-Interfaces: Installer, Authenticator, Plugin
-Entry point: nginx = certbot_nginx._internal.configurator:NginxConfigurator
-Initialized: <certbot_nginx._internal.configurator.NginxConfigurator object at 0x1126c2380>
-Prep: Error while running nginx -c /usr/local/etc/nginx/nginx.conf -t.
-
-nginx: [alert] could not open error log file: open() "/usr/local/nginx/logs/error.log" failed (13: Permission denied)
-2022/12/15 17:10:07 [emerg] 51479#0: open() "/usr/local/etc/nginx/nginx.conf" failed (2: No such file or directory)
-nginx: configuration file /usr/local/etc/nginx/nginx.conf test failed
-
+  File "/usr/local/bin/certbot", line 33, in <module>
+    sys.exit(load_entry_point('certbot==1.31.0', 'console_scripts', 'certbot')())
+  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/main.py", line 19, in main
+    return internal_main.main(cli_args)
+  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/main.py", line 1744, in main
+    return config.func(config, plugins)
+  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/main.py", line 1591, in certonly
+    lineage = _get_and_save_cert(le_client, config, domains, certname, lineage)
+  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/main.py", line 141, in _get_and_save_cert
+    lineage = le_client.obtain_and_enroll_certificate(domains, certname)
+  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/client.py", line 530, in obtain_and_enroll_certificate
+    cert, chain, key, _ = self.obtain_certificate(domains)
+  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/client.py", line 442, in obtain_certificate
+    orderr = self._get_order_and_authorizations(csr.data, self.config.allow_subset_of_names)
+  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/client.py", line 510, in _get_order_and_authorizations
+    authzr = self.auth_handler.handle_authorizations(orderr, self.config, best_effort)
+  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/auth_handler.py", line 106, in handle_authorizations
+    self._poll_authorizations(authzrs, max_retries, best_effort)
+  File "/usr/local/Cellar/certbot/1.31.0/libexec/lib/python3.10/site-packages/certbot/_internal/auth_handler.py", line 206, in _poll_authorizations
+    raise errors.AuthorizationError('Some challenges have failed.')
+certbot.errors.AuthorizationError: Some challenges have failed.
+2022-12-15 17:11:44,035:ERROR:certbot._internal.log:Some challenges have failed.

@@ -21,7 +21,7 @@ export const NotificationTypes = {
     "Action": "kn.chats.action.notification",
 }
 export const registerNotifications = async (registration, user) => {
-    if (!registration.active || !('pushManager' in registration)) return console.log("failed to register notifications");
+    if (!registration.active || !('pushManager' in registration) || !("Notification" in window)) return console.log("failed to register notifications");
     const subscription = (await registration.pushManager.getSubscription()) ?? (await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(vapid.public_key)

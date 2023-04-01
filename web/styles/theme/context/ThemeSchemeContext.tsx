@@ -6,26 +6,32 @@ import {argbFromHex, hexFromArgb, themeFromImage, themeFromSourceColor} from '@m
 export interface ThemeSchemeContextType {
     themeScheme: M3ThemeScheme,
     generateThemeScheme: (base: string) => void,
-    resetThemeScheme: () => void
+    resetThemeScheme: () => void,
+    setThemeScheme: (scheme: M3ThemeScheme) => void, // Inserted
 }
 
 export const ThemeSchemeContext = createContext<ThemeSchemeContextType>({
     themeScheme: DEFAULT_M3_THEME_SCHEME,
+    setThemeScheme: (scheme: M3ThemeScheme) => {
+    }, // Inserted
     generateThemeScheme: async (base: string) => {
     },
     resetThemeScheme: () => {
     }
 });
 
-const THEME_SCHEME_KEY = 'ThemeScheme';
+export const THEME_SCHEME_KEY = 'ThemeScheme';
+export const OG_THEME_SCHEME_KEY = 'theme-scheme-og';
 
 const ThemeSchemeProvider: FC<{ children: ReactNode }> = ({children}) => {
 
     const [themeScheme, setThemeScheme] = useState<M3ThemeScheme>(DEFAULT_M3_THEME_SCHEME);
 
     useEffect(() => {
-        if (localStorage.getItem(THEME_SCHEME_KEY)) {
-            const localThemeScheme = JSON.parse(localStorage.getItem(THEME_SCHEME_KEY) || '{}');
+        const ogScheme = localStorage.getItem(OG_THEME_SCHEME_KEY);
+        const scheme = localStorage.getItem(THEME_SCHEME_KEY);
+        if (ogScheme || scheme) {
+            const localThemeScheme = JSON.parse(ogScheme || scheme || '{}');
             setThemeScheme(localThemeScheme);
         }
         // Object.defineProperty(window, "generateThemeScheme", {value: generateThemeScheme, writable: true});
@@ -62,14 +68,18 @@ const ThemeSchemeProvider: FC<{ children: ReactNode }> = ({children}) => {
         setThemeScheme(scheme);
         localStorage.setItem(THEME_SCHEME_KEY, JSON.stringify(scheme))
     };
-
+    const _setThemeScheme = (scheme: M3ThemeScheme) => {
+        setThemeScheme(scheme);
+        localStorage.setItem(THEME_SCHEME_KEY, JSON.stringify(scheme));
+    }
     const resetThemeScheme = () => {
         setThemeScheme(DEFAULT_M3_THEME_SCHEME);
         localStorage.setItem(THEME_SCHEME_KEY, JSON.stringify(DEFAULT_M3_THEME_SCHEME));
     };
 
     return (
-        <ThemeSchemeContext.Provider value={{themeScheme, generateThemeScheme, resetThemeScheme}}>
+        <ThemeSchemeContext.Provider
+            value={{themeScheme, setThemeScheme: _setThemeScheme, generateThemeScheme, resetThemeScheme}}>
             {children}
         </ThemeSchemeContext.Provider>
     )

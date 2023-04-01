@@ -8,8 +8,8 @@ import {Fragment, memo, useContext, useEffect, useState} from "react";
 import Paper from "@mui/material/Paper";
 import {RootContext} from "@/components/Conversation/Context";
 import {useTheme} from "@mui/material/styles";
-import Delayed from "@/components/Delayed";
 import {useConfirm} from "material-ui-confirm";
+import {getDominantColor} from "@/utils/colored/colortheif";
 // @ts-ignore
 const Delete = dynamic(() => import("@mui/icons-material/Delete"));
 // @ts-ignore
@@ -31,7 +31,7 @@ export const Options = (({embedded}) => {
     const [images, setImages] = useState([]);
     const {chat} = useContext(RootContext);
     useEffect(() => {
-        fetch('https://docs.kabeercloud.tk/static/chats/backgrounds/index.json').then(res => res.json()).then(backgrounds => {
+        fetch('https://docs.cloud.kabeers.network/static/chats/backgrounds/index.json').then(res => res.json()).then(backgrounds => {
             setBackgrounds(backgrounds);
             setImages(Object.entries(backgrounds).slice(0, 10))
         });
@@ -40,12 +40,16 @@ export const Options = (({embedded}) => {
     const confirm = useConfirm();
     // @ts-ignore
     return (
-        <div style={{maxHeight: '100%'}}>
+        <div style={{maxHeight: '100vh', overflowY: "scroll"}}>
             {!embedded && <ListSubheader>Conversation Options</ListSubheader>}
             <List>
                 <ListItem disablePadding>
                     <ListItemButton onClick={async () => {
-                        confirm({title: 'Delete Conversation', confirmationText: "Delete", description: 'Are you sure you want to delete this Conversation? (you cannot undo this action)'}).then(() => {
+                        confirm({
+                            title: 'Delete Conversation',
+                            confirmationText: "Delete",
+                            description: 'Are you sure you want to delete this Conversation? (you cannot undo this action)'
+                        }).then(() => {
                             db.collection("chats").doc(router.query?.id?.toString()).delete();
                             router.push("/");
                         }).catch()
@@ -72,17 +76,20 @@ export const Options = (({embedded}) => {
                                         <Avatar
                                             component={Paper}
                                             variant={'rounded'}
-                                            src={`https://docs.kabeercloud.tk/static/chats/backgrounds/default/${theme.palette.mode === 'dark' ? 'black.jpeg' : 'white.png'}`}/>
+                                            src={`https://docs.cloud.kabeers.network/static/chats/backgrounds/default/${theme.palette.mode === 'dark' ? 'black.jpeg' : 'white.png'}`}/>
                                     </IconButton>
                                 </Grid>
                                 {images.map(([hash, {name}]) => (
                                     <Grid key={hash} item>
                                         <IconButton
-                                            onClick={() => db.collection("chats").doc(chat.data.id).set({
+                                            onClick={async () => db.collection("chats").doc(chat.data.id).set({
                                                 background: {
                                                     ...chat.data.background ? {} : chat.data.background,
                                                     hash: hash,
-                                                    name
+                                                    name,
+                                                    ambient: {
+                                                        main: await getDominantColor(`https://docs.cloud.kabeers.network/static/chats/backgrounds/images/${name}`)
+                                                    }
                                                 }
                                             }, {merge: true})}
                                             disabled={chat.data?.background ? (chat.data?.background?.hash === hash) : false}>
@@ -90,13 +97,14 @@ export const Options = (({embedded}) => {
                                                 imgProps={{loading: 'lazy'}}
                                                 component={Paper}
                                                 variant={'rounded'}
-                                                src={`https://docs.kabeercloud.tk/static/chats/backgrounds/images/${name}`}/>
+                                                src={`https://docs.cloud.kabeers.network/static/chats/backgrounds/images/${name}`}/>
                                         </IconButton>
                                     </Grid>
                                 ))}
-                                {(images.length < Object.keys(backgrounds).length) && <Grid item xs={12}><Button onClick={() => {
-                                    setImages(Object.entries(backgrounds).slice(0, images.length + 10))
-                                }}>Load More</Button></Grid>}
+                                {(images.length < Object.keys(backgrounds).length) &&
+                                    <Grid item xs={12}><Button onClick={() => {
+                                        setImages(Object.entries(backgrounds).slice(0, images.length + 10))
+                                    }}>Load More</Button></Grid>}
                             </Grid>}
                         </div>
                     </ListItem>

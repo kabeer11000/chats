@@ -1,5 +1,5 @@
 import {auth} from "firebase-config";
-import {Fragment, memo, useContext, useEffect, useRef} from "react";
+import {Fragment, useContext, useEffect, useRef, useState} from "react";
 import {DrawerContext} from "root-contexts";
 // @ts-ignore
 import dynamic from "next/dynamic";
@@ -12,8 +12,14 @@ import useTheme from "@mui/material/styles/useTheme";
 // @ts-ignore
 import {useAuthState} from "react-firebase-hooks/auth";
 import {debounce} from "@/utils/debounce";
+import {useInput} from "../../zustand/Conversation";
 // import {debounce} from "../../utils/debounce";
 // import AppBar from "@mui/material/AppBar";
+import data from '@emoji-mart/data'
+import Picker from '@emoji-mart/react'
+import {Grow, Popover} from "@mui/material";
+import {EmojiEmotions} from "@mui/icons-material";
+import {ClickAwayListener} from "@mui/base";
 // @ts-ignore
 const ButtonBase = dynamic(() => import("@mui/material/ButtonBase"));
 // @ts-ignore
@@ -43,15 +49,69 @@ const Send = dynamic(() => import("@mui/icons-material/Send"));
 // @ts-ignore
 const Mic = dynamic(() => import("@mui/icons-material/Mic"));
 
+function InputEmojiButton() {
+
+    const setText = useInput(state => state.setText);
+    const text = useInput(state => state.state.text);
+    const focused = useInput(state => state.state.focused);
+    const {isDesktop} = useContext(DrawerContext);
+
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+    useEffect(() => {
+        if (focused) handleClose()
+    }, [focused])
+
+    const open = Boolean(anchorEl);
+    const id = open ? 'simple-popover' : undefined;
+    return (
+        <Fragment>
+            {!focused && <IconButton aria-describedby={id} onClick={(e) => open ? handleClose() : handleClick(e)}>
+                <EmojiEmotions/>
+            </IconButton>}
+            {isDesktop ? <Popover
+                id={id}
+                marginThreshold={70}
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'left',
+                }}>
+                <div>
+                    <Picker data={data} onEmojiSelect={({native}) => setText((text ?? "") + native)}/>
+                </div>
+            </Popover> : (
+                <ClickAwayListener onClickAway={handleClose}>
+                    <Grow in={open} mountOnEnter unmountOnExit>
+                        <div style={{position: 'absolute', bottom: '5rem'}}>
+                            <Picker data={data} onEmojiSelect={({native}) => setText((text ?? "") + native)}/>
+                        </div>
+                    </Grow>
+                </ClickAwayListener>
+            )}
+        </Fragment>
+    );
+}
+
 function ChatInput() {
     // @ts-ignore
     const {drawerWidth, isDesktop} = useContext(DrawerContext);
     const theme = useTheme();
     const [user] = useAuthState(auth);
-    const {text, inputFocused, setInputFocused, setFiles, files, setText, voiceMessage} = useContext(InputContext);
+    const input = useInput();
+    const {voiceMessage} = useContext(InputContext);
     const {reply, methods: {onReply, SendMessage}, Files: fileContext} = useContext(RootContext);
     const inputRef = useRef();
-    const online = useNetwork()
+    const online = useNetwork();
     const onSend = (async () => {
         await SendMessage()
         // @ts-ignore
@@ -59,8 +119,8 @@ function ChatInput() {
     });
     const isSafari = navigator ? /^((?!chrome|android).)*safari/i.test(navigator.userAgent) : false;
     useEffect(() => {
-        if (isSafari && !isDesktop) window._KN_CHATS_DEV_KEYBOARD_TOGGLE(inputFocused)
-    }, [inputFocused])
+        if (isSafari && !isDesktop) window._KN_CHATS_DEV_KEYBOARD_TOGGLE(input.state.focused)
+    }, [input.state.focused])
     return (
         <Fragment>
             <div style={{position: 'fixed', top: 0}}><input type={'text'} hidden/></div>
@@ -117,8 +177,8 @@ function ChatInput() {
                         </div>
                     </div> : null}</div>
                 </Slide>
-                <Slide in={!!(files?.length)} direction={"up"}>
-                    <div hidden={!files?.length} className={"files-preview-slide-up"}>
+                <Slide in={!!(input.state.files?.length)} direction={"up"}>
+                    <div hidden={!input.state.files?.length} className={"files-preview-slide-up"}>
                         <div style={{
                             display: "flex",
                             marginBottom: "0.25rem",
@@ -128,7 +188,7 @@ function ChatInput() {
                             paddingBottom: "0.5rem"
                         }}>
                             <div>
-                                {files?.length ? files.map((file, index) => {
+                                {input.state.files?.length ? input.state.files.map((file, index) => {
                                     switch (file.type) {
                                         case "kn.chats.IMAGE":
                                             return (
@@ -151,7 +211,7 @@ function ChatInput() {
                             </div>
                             <div style={{flex: 1}}/>
                             <div style={{display: "flex", alignItems: "center"}}>
-                                <IconButton onClick={() => setFiles([])}>
+                                <IconButton onClick={() => input.setFiles([])}>
                                     <Close/>
                                 </IconButton>
                             </div>
@@ -159,20 +219,28 @@ function ChatInput() {
                     </div>
                 </Slide>
                 <div style={{display: "flex", transitionDuration: ".4s"}}>
-                    {(!!!files.length && !inputFocused) &&
-                        <IconButton color={"inherit"} disabled={!online} hidden={!!files.length}>
+                    {(!!!input.state.files.length && !input.state.focused) &&
+                        <IconButton color={"inherit"} disabled={!online} hidden={!!input.state.files.length}>
                             <label style={{padding: 0, margin: 0, height: "80%"}}>
                                 <Image/>
                                 <input {...fileContext.Dropzone.getInputProps()} hidden/>
                             </label>
                         </IconButton>}
-                    {(!!!files.length && !inputFocused) &&
+                    {(!!!input.state.files.length && !input.state.focused) &&
                         <IconButton color={"inherit"} disabled={!online} onClick={voiceMessage.toggleSheet}>
                             <Mic/>
                         </IconButton>}
+                    <InputEmojiButton/>
                     <InputBase
-                        onBlur={() => setInputFocused(false)}
-                        onFocus={() => setInputFocused(true)}
+                        onBlur={() => {
+                            input.setFocus(false);
+                            console.log("focus lost", input.state)
+                        }}
+                        onFocus={() => {
+                            input.setFocus(true);
+                            console.log("focus gained")
+                            console.re?.log('focused')
+                        }}
                         autoFocus={true}
                         ref={inputRef}
                         autoComplete={"off"}
@@ -183,7 +251,7 @@ function ChatInput() {
                             backgroundColor: (theme?.mode ?? theme.palette.mode) === "dark" ? "rgba(236, 236, 236, 0.1)" : "rgba(236, 236, 236, 0.7)",
                             flex: 1,
                             height: 40.5,
-                            marginLeft: inputFocused ? 0 : "1rem",
+                            marginLeft: input.state.focused ? 0 : "1rem",
                             paddingLeft: "1rem",
                             paddingRight: "1rem",
                             borderRadius: ".5rem",
@@ -191,9 +259,9 @@ function ChatInput() {
                             marginBottom: "0.15rem",
                             transitionDuration: ".1s"
                         }}
-                        value={text}
+                        value={input.state.text}
                         onKeyDown={debounce(e => e.keyCode === 13 ? onSend() : null)}
-                        onChange={((e) => setText(e.target.value))}
+                        onChange={((e) => input.setText(e.target.value))}
                     />
                     {/* @ts-ignore */}
                     <input type="text" style={{display: "none"}}/>

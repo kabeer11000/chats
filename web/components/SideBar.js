@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import {ThemeSchemeContext} from "../styles/theme";
 import {Code, Home, Logout, Settings} from "@mui/icons-material";
 import {useConfirm} from "material-ui-confirm";
+import {useConversations} from "../zustand/Home";
 
 const ChatList = dynamic(() => import("./ChatList"))
 const Version = dynamic(() => import("./Version").then(({Version}) => Version))
@@ -156,8 +157,9 @@ function ResponsiveDrawer() {
             </List>
         </div>
     );
-    const {snapshots: {chats}} = useContext(ChatContext);
+    // const {snapshots: {chats}} = useContext(ChatContext);
     const theme = useTheme();
+    const chats = useConversations(state => state.conversations);
     const [email, setEmail] = useState("");
     // const [resizing, setResizing] = useState(false);
     // const resizeFunc = ({target}) => {
@@ -166,7 +168,7 @@ function ResponsiveDrawer() {
     //     // setDrawerWidth(target.clientWidth);
     // }//, []);
     useEffect(() => {
-        if (qrCodeScanner) alert("This Feature is in early development and not tested. good luck :)")
+        if (qrCodeScanner) confirm({title: "Unstable Feature", hideCancelButton: true, cancellationButtonProps: {style: {display: 'none'}}, confirmationText: "Got it", description: "This Feature is in early development and not tested. \n it may be unstable and buggy"});
     }, [qrCodeScanner]);
     return (
         <Fragment>
@@ -200,7 +202,7 @@ function ResponsiveDrawer() {
                         <ListItemText primary={'Home'}/>
                     </ListItemButton>
                 </ListItem>}
-                {isDesktop && <ChatList expanded={false} chatsSnapshot={chats.data}/>}
+                {isDesktop && <ChatList expanded={false} chatsSnapshot={chats}/>}
                 {drawer}
             </Drawer>
             <Dialog open={!!qrCodeOpen} onClose={() => setQrCodeOpen(false)}>
@@ -235,17 +237,18 @@ function ResponsiveDrawer() {
                     <DialogContent
                         style={{
                             display: "flex",
+                            padding: 0, margin: 0,
                             justifyContent: "center",
                             alignItems: "center",
                             flexDirection: "column"
                         }}>
-                        <Paper elevation={0} style={{position: "relative", maxWidth: "30rem",}}>
+                        <Paper elevation={0} style={{position: "relative"}}>
                             <ButtonBase disabled={!!!email}>
                                 <div style={{width: "100%", height: "100%", flex: 1}}/>
                                 {!email && <QrReader
                                     delay={100}
                                     constraints={{video: {facingMode: 'environment'}}}
-                                    style={{width: "100%", height: "100%", padding: 0, margin: 0, objectFit: "cover"}}
+                                    style={{width: "100%", minWidth: "100vw", marginTop: "-2rem", height: "100vh", padding: 0, margin: 0, objectFit: "cover"}}
                                     onError={() => {}}
                                     onScan={setEmail}
                                 />}</ButtonBase>

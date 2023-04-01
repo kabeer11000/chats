@@ -24,16 +24,12 @@ const SwVersion = () => {
             whiteSpace: "pre-wrap"
         }}>{s.parsed ? JSON.stringify(JSON.parse(s.raw), null, 2) : s.raw}</pre></span>
 }
-const textAreaAtom = atom({
-    key: "textarea-atom",
-    default: ''
-});
 
 export default function Settings() {
     const {drawerWidth, isDesktop} = useContext(DrawerContext);
     const {isDev} = useContext(ActiveContext);
     const router = useRouter();
-    const [t, sT] = useRecoilState(textAreaAtom)
+    const [t, sT] = useState('')
     return (
         <div style={{
             width: `calc(100% - ${isDesktop ? drawerWidth : 0}px`,

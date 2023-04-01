@@ -136,3 +136,15 @@ img[alt] {
   text-align: center;
   content: '';
 }
+@keyframes just-liked-icon-anim {
+  from { transform: rotate(-40deg); scale: 1}
+  to   { transform: rotate(0deg);}
+}
+
+.chats-feed-just-liked {
+  animation: infinite;
+  scale: 1.5;
+  animation-duration: .8s;
+  transform: rotate(-40deg);
+  animation-name: just-liked-icon-anim;
+}

@@ -27,10 +27,10 @@ export default function Header() {
                 elevation={0}
                 component="form"
                 sx={{
-                    p: '2px 4px',
+                    // p: '2px 4px',
                     position: "fixed",
                     marginX: "1rem",
-                    mt: "1rem",
+                    // mt: "1rem",
                     display: 'flex',
                     alignItems: 'center',
                     width: `calc(100% - ${isDesktop ? drawerWidth : 0}px - 2rem)`
@@ -53,7 +53,7 @@ export default function Header() {
 
             <AppBar style={{display: "block", width: `calc(100% - ${isDesktop ? drawerWidth : 0}px)`}}
                     color={trigger ? 'primary' : 'default'} position="fixed" elevation={trigger ? 2 : 0}>
-                <Toolbar style={{paddingTop: ".3rem", paddingBottom: ".3rem"}}>
+                <Toolbar>
                     <Toolbar>
                         <IconButton
                             color="inherit"

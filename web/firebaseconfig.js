@@ -18,8 +18,8 @@ const app = !firebase.apps.length ? firebase.initializeApp(firebaseConfig) : fir
 const db = app.firestore();
 console.log("kn.chats.env: ", process.env.NODE_ENV);
 if ((process.env.NODE_ENV === 'development') && process.env.NEXT_PUBLIC_USE_FIRESTORE_EMULATOR) {
-    console.log('Using Emulator: ', process.env.NEXT_PUBLIC_EMULATOR_ADDRESS.split(':')[0], process.env.NEXT_PUBLIC_EMULATOR_ADDRESS.split(':')[1])
-    db.useEmulator(process.env.NEXT_PUBLIC_EMULATOR_ADDRESS.split(':')[0], process.env.NEXT_PUBLIC_EMULATOR_ADDRESS.split(':')[1]);
+    // console.log('Using Emulator: ', process.env.NEXT_PUBLIC_EMULATOR_ADDRESS.split(':')[0], process.env.NEXT_PUBLIC_EMULATOR_ADDRESS.split(':')[1])
+    // db.useEmulator(process.env.NEXT_PUBLIC_EMULATOR_ADDRESS.split(':')[0], process.env.NEXT_PUBLIC_EMULATOR_ADDRESS.split(':')[1]);
 }
 db.settings({cacheSizeBytes: 5e+7, merge: true});
 const auth = app.auth();

@@ -8,6 +8,8 @@ import {useRouter} from "next/router";
 import {Empty} from "@/components/Empty";
 import {Feedback} from "@mui/icons-material";
 import {Avatar, CircularProgress} from "@mui/material";
+import {useConversations} from "../zustand/Home";
+import ChatsBottomNavigation from "@/components/BottomNavigation";
 
 const Header = dynamic(() => import("../components/Header"))
 const Box = dynamic(() => import("@mui/material/Box"))
@@ -31,7 +33,10 @@ export default function Home() {
     // @ts-ignore
     const {type, drawerWidth, mobileOpen, isDesktop} = useContext(DrawerContext);
     // @ts-ignore
-    const {createChat, snapshots: {chats}, chatSnapshotLoading} = useContext(ChatContext);
+    const {createChat} = useContext(ChatContext);
+    const conversations = useConversations(state => state.conversations);
+    const loading = useConversations(state => state.loading);
+    // console.log('useConversations convos updated: ', _chats)
     const router = useRouter();
     useEffect(() => {
         analytics().setCurrentScreen("kn.chats.scripts.index");
@@ -44,10 +49,10 @@ export default function Home() {
             <div
                 style={{marginLeft: type === "permanent" ? drawerWidth : 0, display: 'flex', flexDirection: "column", flex: 1, flexGrow: 1}}>
                 <Header/>
-                {!chats.loading && (
+                {!loading && (
                     <Fragment>
                         {isDesktop && (
-                            chats.data?.length ? <Empty variant={{
+                            conversations?.length ? <Empty variant={{
                                 title: 'Welcome to Chats',
                                 icon: () => <Avatar
                                                     src={"/images/icon-192.png"}/>,
@@ -67,7 +72,7 @@ export default function Home() {
                             }}/>
                         )}
                         {!isDesktop && (
-                            chats.data?.length ? <List><ChatList expanded={true} chatsSnapshot={chats.data}/></List> : <Empty variant={{
+                            conversations?.length ? <List><ChatList expanded={true} chatsSnapshot={conversations}/></List> : <Empty variant={{
                                 title: 'Chats you create will appear here',
                                 icon: Feedback,
                                 description: 'You currently have no chats. Create a new chat and it will appear here',
@@ -82,7 +87,7 @@ export default function Home() {
                         )}
                     </Fragment>
                 )}
-                {chats.loading && <div style={{
+                {loading && <div style={{
                     display: "flex",
                     height: '100%',
                     flexDirection: "column",
@@ -93,10 +98,17 @@ export default function Home() {
                     <CircularProgress/>
                 </div>}
             </div>
-            <div style={{position: "absolute", bottom: "2rem", right: "1rem"}}>
-                <Zoom in={(isDesktop ? true : !mobileOpen) && (!chatSnapshotLoading && chats)}>
+            <div style={{
+                position: 'fixed',
+                zIndex: 1,
+                bottom: 30,
+                left: 0,
+                right: 0,
+                margin: '0 auto',
+            }}>
+                <Zoom in={(isDesktop ? true : !mobileOpen) && (!loading && conversations)}>
                     <div>
-                        <SpeedDial icon={<Add/>} color="tertiary" ariaLabel={"Create"}>
+                        <SpeedDial icon={<Add color={"inherit"}/>} color="tertiary" ariaLabel={"Create"}>
                             <SpeedDialAction
                                 onClick={async () => {
                                     const ref = await createChat();

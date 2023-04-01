@@ -2,12 +2,12 @@ import {createContext, Fragment, useContext, useEffect, useState} from "react";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth, db} from "firebase-config";
-import {useCollectionData} from "react-firebase-hooks/firestore";
 import * as EmailValidator from "email-validator";
 import firebase from 'firebase/app';
 import "firebase/firestore";
 import {getAudioContext} from "./utils/audio";
-import {converter} from "./components/Conversation/Context";
+import {useConfirm} from "material-ui-confirm";
+import {useConversations} from "./zustand/Home";
 
 export const DrawerContext = createContext({
     mobileOpen: false,
@@ -53,22 +53,19 @@ function arraysEqual(a1, a2) {
 
 export const ChatProvider = ({children}) => {
     const [user] = useAuthState(auth);
-    const [_chatsSnapshot, _chatSnapshotLoading] = useCollectionData((user) ? db.collection('chats').where('users', 'array-contains', user.email).withConverter(converter) : null)
-    // const [chatsSnapshot, chatSnapshotLoading] = useCollection((user) ? db.collection('chats').where('users', 'array-contains', user.email) : null);
-    const isExistingChat = (recipient) => !!_chatsSnapshot?.filter(chat => (chat.users.includes(recipient) && (chat.users.filter(user => user !== user.email) === 1))).length;
-    const isExistingGroupChat = (recipients) => !!_chatsSnapshot?.find(({users}) => {
-        console.log(arraysEqual(users, [...recipients, user.email]), users, [...recipients, user.email])
-        return arraysEqual(users, [...recipients, user.email]);
-    });
-
+    const confirm = useConfirm();
     const createChat = async (input, {isGc} = {isGc: false}) => {
         if (!input) input = prompt(isGc ? 'Enter space seperated email addresses of new chat recipients' : 'Enter recipients email address');
         if (!input?.trim()) return null;
         input = input.trim().toLowerCase();
-        if (isGc ? ([...new Set(input.split(" "))].includes(user.email)) : input === user.email) return alert("You cannot chat with yourself");
+        const conversations = useConversations.getState().conversations;
+        const isExistingChat = (recipient) => !!conversations?.filter(chat => (chat.users.includes(recipient) && (chat.users.filter(user => user !== user.email) === 1))).length;
+        const isExistingGroupChat = (recipients) => !!conversations?.find(({users}) => arraysEqual(users, [...recipients, user.email]));
+
+        if (isGc ? ([...new Set(input.split(" "))].includes(user.email)) : input === user.email) return confirm({title: "You cannot chat with yourself"});
         if (isGc) {
-            for (const email of [...new Set(input.split(" "))]) if (!EmailValidator.validate(email)) return alert("Invalid Email: " + email);
-            if (isExistingGroupChat([...new Set(input.split(" "))])) return alert("Group chat already exists");
+            for (const email of [...new Set(input.split(" "))]) if (!EmailValidator.validate(email)) return confirm({title: "Invalid Email: " + email});
+            if (isExistingGroupChat([...new Set(input.split(" "))])) return confirm({title: "Group chat already exists"});
             const ref = await db.collection('chats').add({
                 users: [user.email, ...[...new Set(input.split(" "))]],
                 lastSent: firebase.firestore.FieldValue.serverTimestamp(),
@@ -85,12 +82,9 @@ export const ChatProvider = ({children}) => {
             return ref;
         }
     };
-
     return (
         <ChatContext.Provider value={{
             createChat,
-            isExistingChat,
-            snapshots: {chats: {data: _chatsSnapshot, loading: _chatSnapshotLoading}},
         }}>
             <Fragment>{children}</Fragment>
         </ChatContext.Provider>

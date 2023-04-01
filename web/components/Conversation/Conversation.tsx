@@ -1,11 +1,13 @@
 // @ts-ignore
 import dynamic from "next/dynamic";
-import {Fragment, memo, useContext, useRef} from "react";
+import {Fragment, useContext, useEffect, useRef} from "react";
 import {DrawerContext} from "root-contexts";
 import {CallProvider, RootContext} from "./Context";
 import {useTheme} from "@mui/material/styles";
-import {Grow} from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import {connect} from "@/components/ConnectHOC";
+import {ThemeSchemeContext} from "@/styles/theme";
+import {rgbToHex} from "@/utils/colored/colortheif";
 
 const Messages = dynamic(() => import("./Messages"));
 const AudioMessageSheet = dynamic(() => import("./AudioMessageSheet"));
@@ -38,13 +40,27 @@ const Typography = dynamic(() => import("@mui/material/Typography"));
 // @ts-ignore
 const Options = dynamic(() => import("./Options"));
 
-const Conversation = () => {
+const Conversation = ({Files, chat}) => {
     // @ts-ignore
     const {type: drawerType, drawerWidth, isDesktop} = useContext(DrawerContext);
-    const {Files, chat} = useContext(RootContext);
-    const scrollContainerRef = useRef()
+    // const {Files, chat} = useContext(RootContext);
+    const scrollContainerRef = useRef();
     const matches = useMediaQuery('(min-width:800px)');
     const theme = useTheme();
+    const {generateThemeScheme, setThemeScheme, themeScheme} = useContext(ThemeSchemeContext);
+    useEffect(() => {
+        if (chat.data?.background?.name && chat.data?.background.ambient?.main) {
+            // const colors = chat.data?.background.ambient?.main;
+            generateThemeScheme(rgbToHex(...chat.data?.background.ambient?.main));
+        } else setThemeScheme(JSON.parse(localStorage.getItem("theme-scheme-og")));
+    }, [chat.data?.background?.name, chat.data?.background?.ambient?.main]);
+    useEffect(() => {
+        const themeSchemeOg = themeScheme;
+        localStorage.setItem("theme-scheme-og", JSON.stringify(themeScheme));
+        return () => {
+            setThemeScheme(themeSchemeOg);
+        }
+    }, [])
     return (
         <Fragment>
             <div style={{
@@ -68,7 +84,25 @@ const Conversation = () => {
                     </CallProvider>
                     <div style={{flex: 1, position: 'relative', overflowX: 'hidden', overflowY: "scroll", flexGrow: 1}}>
                         {/** in Working condition, for chat background feature **/}
-                        <div style={{overflow: 'hidden', zIndex: -1, position: 'absolute', height: '100%', width: '100%'}}>{(chat.data && chat.data?.background?.name) && <img style={{position: 'relative', width: '150%', height: '150%', animation: 'fadein 1s', filter: `blur(${chat.data.background.blur ? '20' : '0'}px) brightness(${theme.palette.mode === "dark" ? .3 : 1.1})`}} src={`https://docs.kabeercloud.tk/static/chats/backgrounds/images/${chat.data.background.name}`}/>}</div>
+                        <div style={{
+                            overflow: 'hidden',
+                            zIndex: -1,
+                            position: 'absolute',
+                            height: '100%',
+                            width: '100%'
+                        }}>
+                            {
+                                (chat.data && chat.data?.background?.name) &&
+                                <img style={{
+                                    position: 'relative',
+                                    width: '150%',
+                                    height: '150%',
+                                    animation: 'fadein 1s',
+                                    filter: `blur(${chat.data.background.blur ? '20' : '0'}px) brightness(${theme.palette.mode === "dark" ? .3 : 1.1})`
+                                }}
+                                     src={`https://docs.cloud.kabeers.network/static/chats/backgrounds/images/${chat.data.background.name}`}/>
+                            }
+                        </div>
                         <Messages scrollContainerRef={scrollContainerRef}/>
                     </div>
                     <div style={{marginTop: "auto"}}><Input/></div>
@@ -87,4 +121,11 @@ const Conversation = () => {
     );
 };
 
-export default (Conversation);
+
+function select() {
+    const {Files, chat} = useContext(RootContext);
+    return {Files, chat};
+}
+
+export default connect(Conversation, select);
+// export default (Conversation);

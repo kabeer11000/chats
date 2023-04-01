@@ -23,15 +23,15 @@ const Delayed = dynamic(() => import("../Delayed"));
 // @ts-ignore
 const Typography = dynamic(() => import("@mui/material/Typography"));
 
-function Messages({scrollContainerRef}) {
+function Messages({scrollContainerRef, messages, chat}) {
     // const {inputFocused, text} = useContext(InputContext)
-
-    const {messages, chat} = useContext(RootContext);
+    console.log("messages updated")
+    // const {messages, chat} = useContext(RootContext);
     const [currentUser] = useAuthState(auth);
     const [loader, setLoader] = useState({loaded: false, height: null, scroll: null});
     const onScroll = async (e) => {
         console.log(e.target.scrollTop)
-        if (!loader.loaded && (e.target.scrollTop <= 100)) {
+        if (scrollContainerRef?.current && !loader.loaded && (e.target.scrollTop <= 100)) {
             setLoader({
                 loaded: true,
                 height: scrollContainerRef?.current.scrollHeight,
@@ -120,4 +120,4 @@ function select() {
     return {messages: messages, chat}
 }
 
-export default Messages;
+export default connect(Messages, select);
