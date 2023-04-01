@@ -20,10 +20,10 @@ const ChatsBottomNavigation = () => {
             <BottomNavigation
                 showLabels value={index[router.pathname]}>
                 <BottomNavigationAction component={Link} href={'/'} label="Chats" icon={<ChatBubble/>}/>
-                <BottomNavigationAction component={Link} href={'/feed'} label="Minis" icon={<Explore/>}/>
                 <div hidden={router.pathname !== '/'} style={{width: '5rem'}}/>
-                <BottomNavigationAction component={Link} href={'/music'} label="Music" icon={<MusicNote/>}/>
-                <BottomNavigationAction component={Link} href={'/profile'} label="Profile" icon={<Person/>}/>
+                <BottomNavigationAction component={Link} href={'/feed'} label="Minis" icon={<Explore/>}/>
+                {/*<BottomNavigationAction component={Link} href={'/music'} label="Music" icon={<MusicNote/>}/>*/}
+                {/*<BottomNavigationAction component={Link} href={'/profile'} label="Profile" icon={<Person/>}/>*/}
             </BottomNavigation>
         </Paper></div>)
     )

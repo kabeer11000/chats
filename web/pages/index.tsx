@@ -102,9 +102,9 @@ export default function Home() {
                 position: 'fixed',
                 zIndex: 1,
                 bottom: 30,
-                left: 0,
-                right: 0,
-                margin: '0 auto',
+                left:  isDesktop ? undefined : 0,
+                right: isDesktop ? '1rem' : 0,
+                margin: isDesktop ? '0 auto' : undefined,
             }}>
                 <Zoom in={(isDesktop ? true : !mobileOpen) && (!loading && conversations)}>
                     <div>

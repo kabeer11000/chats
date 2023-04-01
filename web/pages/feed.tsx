@@ -19,6 +19,7 @@ import {DrawerContext} from "root-contexts";
 import {VideoPlayer} from "@/components/VerticalVideo/VideoPlayer";
 import {usePlayerState, useVideo} from "../zustand/VerticalVideo";
 import {ThemeModeContext} from "@/styles/theme";
+import {useConfirm} from "material-ui-confirm";
 
 const Box = dynamic(() => import("@mui/material/Box"))
 const Button = dynamic(() => import("@mui/material/Button"))
@@ -74,8 +75,12 @@ export const Feed = () => {
     const theme = useTheme();
     const video = useVideo()
     const [state, setState] = useState(0);
+    const confirm = useConfirm();
     const {toggleThemeMode} = useContext(ThemeModeContext);
     useEffect(() => {
+        if (!localStorage.getItem('kn.chats.minis.experimental-prompt')) confirm({cancellationButtonProps: {style: {display: 'none'}}, confirmationText: 'Got It', title: 'Experimental Feed', description: <>Mini's are a experiment, they're currently static 5 videos while we're testing. <br/>This will hopefully be a fun feed in the future <br/><br/>Leave your feedback at <a href={"mailto:kabeer@kabeers.network"}>kabeer@kabeers.network</a></>}).then(() => {
+            localStorage.setItem('kn.chats.minis.experimental-prompt', 1);
+        });
         toggleThemeMode();
         return () => toggleThemeMode();
     }, []);
