@@ -93,9 +93,7 @@ export const AudioMessageSheet = () => {
         audioEl.onloadeddata = () => audioEl.play().then(() => setPlayback({
             audioEl, playing: true
         }));
-        audioEl.onended = () => {
-            setPlayback({...playback, playing: false});
-        }
+        audioEl.onended = () => setPlayback({...playback, playing: false});
     }, []);
     const theme = useTheme();
     useEffect(() => {
@@ -107,11 +105,7 @@ export const AudioMessageSheet = () => {
             if ((mediaRecorder && mediaRecorder.state === ("recording" || "active"))) mediaRecorder.stop();
         }
     }, [voiceMessage.sheetOpen]);
-    useEffect(() => {
-        return () => {
-            playback.audioEl?.pause();
-        }
-    }, [])
+    useEffect(() => () => playback.audioEl?.pause(), []);
     return (
         <div>
             <Backdrop style={{zIndex: "9999"}} open={saving}>
@@ -128,7 +122,7 @@ export const AudioMessageSheet = () => {
                     const formData = new FormData();
                     const file = new File([audioBlob], "audio.webm", {
                         type: "audio/webm"
-                    })
+                    });
                     formData.append("file", file, file.name);
                     const res = await fetch("https://kabeers-papers-pdf2image.000webhostapp.com/kabeer-chats-storage/upload.php?branch=vms-emulated", {
                         method: 'POST',

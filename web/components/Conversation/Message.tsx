@@ -198,7 +198,7 @@ const Message = ({message, continued, replyingTo, currentUser, onReply}) => {
                             properties={{target: '_blank', style: {color: "blue!important"}}}>
                             <Typography
                                 style={{
-                                    filter: "brightness(2)",
+                                    // filter: "brightness(2)",
                                     color: theme.palette.getContrastText(messageType === "sender" ? theme.palette.primary[theme.palette.mode === "dark" ? "dark" : "main"] : theme.palette.mode === "dark" ? theme.palette.grey["800"] : theme.palette.grey["200"]),
                                     wordBreak: "break-all"
                                 }}>

@@ -15,11 +15,12 @@ import {debounce} from "@/utils/debounce";
 import {useInput} from "../../zustand/Conversation";
 // import {debounce} from "../../utils/debounce";
 // import AppBar from "@mui/material/AppBar";
-import data from '@emoji-mart/data'
-import Picker from '@emoji-mart/react'
 import {Grow, Popover} from "@mui/material";
 import {EmojiEmotions} from "@mui/icons-material";
-import {ClickAwayListener} from "@mui/base";
+import ClickAwayListener from '@mui/base/ClickAwayListener';
+import Portal from '@mui/base/Portal';
+import EmojiPicker from 'emoji-picker-react';
+
 // @ts-ignore
 const ButtonBase = dynamic(() => import("@mui/material/ButtonBase"));
 // @ts-ignore
@@ -73,9 +74,11 @@ function InputEmojiButton() {
     const id = open ? 'simple-popover' : undefined;
     return (
         <Fragment>
-            {!focused && <IconButton aria-describedby={id} onClick={(e) => open ? handleClose() : handleClick(e)}>
-                <EmojiEmotions/>
-            </IconButton>}
+            {(isDesktop && !focused) &&
+                <IconButton color={"inherit"} aria-describedby={id}
+                            onClick={(e) => open ? handleClose() : handleClick(e)}>
+                    <EmojiEmotions/>
+                </IconButton>}
             {isDesktop ? <Popover
                 id={id}
                 marginThreshold={70}
@@ -87,15 +90,35 @@ function InputEmojiButton() {
                     horizontal: 'left',
                 }}>
                 <div>
-                    <Picker data={data} onEmojiSelect={({native}) => setText((text ?? "") + native)}/>
+                    <EmojiPicker
+                        onEmojiClick={({emoji}) => setText((text ?? "") + emoji)}/>
                 </div>
             </Popover> : (
                 <ClickAwayListener onClickAway={handleClose}>
-                    <Grow in={open} mountOnEnter unmountOnExit>
-                        <div style={{position: 'absolute', bottom: '5rem'}}>
-                            <Picker data={data} onEmojiSelect={({native}) => setText((text ?? "") + native)}/>
-                        </div>
-                    </Grow>
+                    <Fragment>
+                        <Portal>
+                            <Grow in={open} mountOnEnter unmountOnExit>
+                                <div style={{
+                                    position: 'absolute',
+                                    width: '100vw',
+                                    justifyContent: 'center',
+                                    display: 'flex',
+                                    bottom: '5.2rem'
+                                }}>
+                                    <div style={{justifySelf: 'center', marginLeft: 'auto', marginRight: 'auto'}}>
+                                        <EmojiPicker
+                                            width={"96vw"} height={"81vh"}
+                                            onEmojiClick={({emoji}) => setText((text ?? "") + emoji)}/>
+                                    </div>
+                                </div>
+                            </Grow>
+                        </Portal>
+                        {(!focused) &&
+                            <IconButton color={"inherit"} aria-describedby={id}
+                                        onClick={(e) => open ? handleClose() : handleClick(e)}>
+                                <EmojiEmotions/>
+                            </IconButton>}
+                    </Fragment>
                 </ClickAwayListener>
             )}
         </Fragment>
@@ -113,7 +136,7 @@ function ChatInput() {
     const inputRef = useRef();
     const online = useNetwork();
     const onSend = (async () => {
-        await SendMessage()
+        await SendMessage();
         // @ts-ignore
         if (inputRef.current) inputRef.current?.focus();
     });

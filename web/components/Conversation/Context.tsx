@@ -145,10 +145,8 @@ export const RootProvider = (({children}) => {
         input.setFiles([]);
         input.setText('');
         setReply({message: null});
-        // console.log(members, membersLoading, subscriptions);
         if (members && !membersLoading && subscriptions.length) {
             if (navigator.onLine) { // TODO Offline Queue Notifications
-                console.log(subscriptions)
                 const notif = new Notification("kn.chats.conversation.text.notification", {
                     call: {session: ""},
                     data: {

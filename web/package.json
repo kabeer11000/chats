@@ -25,6 +25,7 @@
     "colorthief": "^2.4.0",
     "email-validator": "^2.0.4",
     "emoji-mart": "^5.5.2",
+    "emoji-picker-react": "^4.4.9",
     "eslint-config-next": "^13.0.0",
     "firebase": "8.7.1",
     "material-dynamic-colors": "^0.0.10",
