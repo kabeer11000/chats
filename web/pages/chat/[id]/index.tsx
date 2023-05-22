@@ -13,9 +13,9 @@ import {useAuthState} from "react-firebase-hooks/auth";
 const Conversation = dynamic(() => import("@/components/v2/Conversation/Conversation"), {
     loading: () => <Skeleton variant="rectangular" width={`100%`} height={"100vh"}/>
 })
-export const getServerSideProps = async ({params}) => {
-    return ({props: {exists: true /*(await db.collection("chats").doc(params.id).get()).exists */}});
-}
+// export const getServerSideProps = async ({params}) => {
+//     return ({props: {exists: true /*(await db.collection("chats").doc(params.id).get()).exists */}});
+// }
 export default function Chat({exists}) {
     const router = useRouter();
     const [subscribeToMessages, unSubscribeToMessages] = useMessagesState(state => [state.subscribe, state.unsubscribe], shallow);
