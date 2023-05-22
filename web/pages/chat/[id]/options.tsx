@@ -1,33 +1,21 @@
 // @ts-ignore
 import dynamic from "next/dynamic";
-import {useContext} from "react";
+import {useContext, useEffect} from "react";
 import {DrawerContext} from "root-contexts";
 // @ts-ignore
 import {useRouter} from "next/router";
 import useScrollTrigger from "@mui/material/useScrollTrigger";
-import Options from "@/components/Conversation/Options";
-import {InputProvider, RootProvider} from "@/components/Conversation/Context";
+import Options from "@/components/v2/Conversation/Options";
 import Head from "next/head";
-// @ts-ignore
+import {useConversationState} from "@/zustand/v2/Conversation";
+import {useAuthState} from "react-firebase-hooks/auth";
+import {auth} from "firebase-config";
+
 const AppBar = dynamic(() => import("@mui/material/AppBar"));
-// @ts-ignore
 const Toolbar = dynamic(() => import("@mui/material/Toolbar"));
-// @ts-ignore
 const Typography = dynamic(() => import("@mui/material/Typography"));
-// @ts-ignore
 const IconButton = dynamic(() => import("@mui/material/IconButton"));
-// @ts-ignore
 const ArrowBack = dynamic(() => import("@mui/icons-material/ArrowBack"));
-// @ts-ignore
-const Delete = dynamic(() => import("@mui/icons-material/Delete"));
-// @ts-ignore
-const List = dynamic(() => import("@mui/material/List"));
-// @ts-ignore
-const ListItem = dynamic(() => import("@mui/material/ListItem"));
-// @ts-ignore
-const ListItemText = dynamic(() => import("@mui/material/ListItemText"));
-// @ts-ignore
-const ListItemIcon = dynamic(() => import("@mui/material/ListItemIcon"));
 export default function OptionsPage({}) {
     // @ts-ignore
     const {drawerWidth, isDesktop} = useContext(DrawerContext);
@@ -38,6 +26,14 @@ export default function OptionsPage({}) {
         threshold: 0,
         target: window ? window : undefined,
     });
+    const [user, userLoading] = useAuthState(auth);
+    useEffect(() => {
+        if (userLoading && !user) return ;
+        useConversationState.getState().subscribe(router.query.id.toString(), user);
+        return () => {
+            useConversationState.getState().unsubscribe()
+        }
+    }, [userLoading]);
     return (
         <div style={{
             width: isDesktop ? `calc(100% - ${drawerWidth}px)` : "100%",
@@ -54,15 +50,11 @@ export default function OptionsPage({}) {
                     <IconButton color={'inherit'} onClick={() => router.back()} style={{marginRight: "1rem"}}>
                         <ArrowBack/>
                     </IconButton>
-                    <Typography variant={"body1"}>Conversation Options</Typography>
+                    <Typography variant={"body1"}><strong>Conversation Options</strong></Typography>
                 </Toolbar>
             </AppBar>
             <div style={{marginTop: "4rem"}}>
-                <InputProvider>
-                    <RootProvider>
-                        <Options embedded={true}/>
-                    </RootProvider>
-                </InputProvider>
+                <Options embedded={true}/>
             </div>
         </div>
     )

@@ -1,35 +1,28 @@
-// @ts-ignore
 import dynamic from "next/dynamic";
-// @ts-ignore
 import {useRouter} from "next/router";
 import {db} from "firebase-config";
 import {Avatar, Checkbox, Grid, IconButton, ListSubheader, Skeleton} from "@mui/material";
-import {Fragment, memo, useContext, useEffect, useState} from "react";
+import {Fragment, memo, useEffect, useState} from "react";
 import Paper from "@mui/material/Paper";
-import {RootContext} from "@/components/Conversation/Context";
 import {useTheme} from "@mui/material/styles";
 import {useConfirm} from "material-ui-confirm";
 import {getDominantColor} from "@/utils/colored/colortheif";
-// @ts-ignore
+import {useConversationState} from "@/zustand/v2/Conversation";
+import shallow from "zustand/shallow";
+
 const Delete = dynamic(() => import("@mui/icons-material/Delete"));
-// @ts-ignore
 const List = dynamic(() => import("@mui/material/List"));
-// @ts-ignore
 const Button = dynamic(() => import("@mui/material/Button"));
-// @ts-ignore
 const ListItem = dynamic(() => import("@mui/material/ListItem"));
-// @ts-ignore
 const ListItemText = dynamic(() => import("@mui/material/ListItemText"));
-// @ts-ignore
 const ListItemIcon = dynamic(() => import("@mui/material/ListItemIcon"));
-const ListItemButton = dynamic(() => import("@mui/material/ListItemButton"))
-const Divider = dynamic(() => import("@mui/material/Divider"))
+const ListItemButton = dynamic(() => import("@mui/material/ListItemButton"));
 
 export const Options = (({embedded}) => {
     const router = useRouter();
     const [backgrounds, setBackgrounds] = useState(null);
     const [images, setImages] = useState([]);
-    const {chat} = useContext(RootContext);
+    const chat = useConversationState(state => ({data: state.state, loading: state.loading}), shallow);
     useEffect(() => {
         fetch('https://docs.cloud.kabeers.network/static/chats/backgrounds/index.json').then(res => res.json()).then(backgrounds => {
             setBackgrounds(backgrounds);
@@ -38,7 +31,6 @@ export const Options = (({embedded}) => {
     }, []);
     const theme = useTheme();
     const confirm = useConfirm();
-    // @ts-ignore
     return (
         <div style={{maxHeight: '100vh', overflowY: "scroll"}}>
             {!embedded && <ListSubheader>Conversation Options</ListSubheader>}

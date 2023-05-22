@@ -1,9 +1,10 @@
-import {memo, useCallback, useContext, useEffect, useState} from "react";
+import {memo, useCallback, useEffect, useState} from "react";
 // @ts-ignore
 import dynamic from "next/dynamic";
 import {getAudioContext} from "@/utils/audio";
-import {InputContext} from "./Context";
 import {useTheme} from "@mui/material/styles";
+import shallow from "zustand/shallow";
+import {useAudioMessageSheetState, useInput} from "@/zustand/v2/Conversation";
 // @ts-ignore
 const Check = dynamic(() => import("@mui/icons-material/Check"));
 // @ts-ignore
@@ -40,7 +41,8 @@ export const AudioMessageSheet = () => {
         playing: false,
         audioEl: null
     });
-    const {voiceMessage, files, setFiles} = useContext(InputContext);
+    const voiceMessageState = useAudioMessageSheetState();
+    const {files, setFiles} = useInput(state => ({files: state.state.files, setFiles: state.setFiles}), shallow);
     const [saving, setSaving] = useState(false);
     const [mediaRecorder, setMediaRecorder] = useState(null);
     const [audioSrc, setAudioSrc] = useState(null);
@@ -97,14 +99,9 @@ export const AudioMessageSheet = () => {
     }, []);
     const theme = useTheme();
     useEffect(() => {
-        if (voiceMessage.sheetOpen) {
-            console.log("media recording started")
-            recordAudio().then();
-        }
-        return () => {
-            if ((mediaRecorder && mediaRecorder.state === ("recording" || "active"))) mediaRecorder.stop();
-        }
-    }, [voiceMessage.sheetOpen]);
+        if (voiceMessageState.open) console.log("media recording started"), recordAudio().then();
+        return () => ((mediaRecorder && mediaRecorder.state === ("recording" || "active"))) && mediaRecorder.stop();
+    }, [voiceMessageState.open]);
     useEffect(() => () => playback.audioEl?.pause(), []);
     return (
         <div>
@@ -116,9 +113,9 @@ export const AudioMessageSheet = () => {
             <Drawer variant={"temporary"} onClose={async () => {
                 try {
                     if ((mediaRecorder && mediaRecorder.state === ("recording" || "active"))) return mediaRecorder.stop();
-                    if (!audioBlob) return voiceMessage.toggleSheet();
+                    if (!audioBlob) return voiceMessageState.toggle();
                     setSaving(true);
-                    voiceMessage.toggleSheet();
+                    voiceMessageState.toggle();
                     const formData = new FormData();
                     const file = new File([audioBlob], "audio.webm", {
                         type: "audio/webm"
@@ -135,7 +132,7 @@ export const AudioMessageSheet = () => {
                     setSaving(false);
                     alert("An error occurred uploading audio");
                 }
-            }} open={voiceMessage.sheetOpen} anchor={"bottom"} PaperProps={{
+            }} open={voiceMessageState.open} anchor={"bottom"} PaperProps={{
                 style: {
                     alignSelf: "center",
                     marginLeft: "auto",

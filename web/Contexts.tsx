@@ -10,16 +10,22 @@ import {useConfirm} from "material-ui-confirm";
 import {useConversations} from "./zustand/Home";
 
 export interface IDrawerContext {
+    mobileOpen: boolean,
     type: "permanent" | "temporary",
-    isDesktop: matches,
-    createGCDialog: {open: cgcd, toggle: () => scgcd(!cgcd)},
-    drawerWidth: drawerWidth,
-    setDrawerWidth,
-    toggle: (a) =>
+    isDesktop: boolean,
+    createGCDialog: {open: boolean, toggle: () => any},
+    drawerWidth: number,
+    setDrawerWidth: (width: number) => any,
+    toggle: (a: undefined | boolean) => any
 }
-export const DrawerContext = createContext({
+export const DrawerContext = createContext<IDrawerContext>({
     mobileOpen: false,
-    isDesktop: true
+    isDesktop: true,
+    type: "temporary",
+    createGCDialog: {open: false, toggle: () => null},
+    drawerWidth: 340,
+    setDrawerWidth: (width: number) => null,
+    toggle: (a: undefined | boolean) => null
 });
 export const DrawerProvider = ({children}) => {
     const [drawerWidth, setDrawerWidth] = useState(340)
@@ -98,11 +104,14 @@ export const ChatProvider = ({children}) => {
         </ChatContext.Provider>
     )
 }
-export const ActiveContext = createContext({
+export const ActiveContext = createContext<{active: boolean, visible: boolean, isDev: boolean}>({
     active: true,
-    visible: true
+    visible: true,
+    isDev: false
 });
-export const VoiceMessageContext = createContext({
+export const VoiceMessageContext = createContext<{
+    // getMediaStreamSource: () => Promise<[AudioContext, MediaStream, MediaStreamAudioSourceNode]> | undefined,
+}>({
     stream: null,
     audioContext: null
 });

@@ -1,5 +1,4 @@
-import {useContext, useEffect, useState} from "react";
-import {RootContext} from "./Context";
+import {ReactNode, Ref, useEffect, useState} from "react";
 // @ts-ignore
 import dynamic from "next/dynamic";
 // @ts-ignore for some reason ref's weren't working with the dynamic import
@@ -10,7 +9,8 @@ import {Feedback} from "@mui/icons-material";
 import {debounce} from "@/utils/debounce";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth} from "firebase-config";
-import {connect} from "@/components/ConnectHOC";
+import {useConversationState, useMessagesState} from "@/zustand/v2/Conversation";
+import shallow from "zustand/shallow";
 // @ts-ignore
 const Message = dynamic(() => import("./Message"), {
     ssr: false
@@ -18,57 +18,66 @@ const Message = dynamic(() => import("./Message"), {
 // @ts-ignore
 const CircularProgress = dynamic(() => import("@mui/material/CircularProgress"));
 // @ts-ignore
-const Delayed = dynamic(() => import("../Delayed"));
+const Delayed = dynamic(() => import("../../Delayed"));
 // const Slide = dynamic(() => import("@mui/material/Grow"));
 // @ts-ignore
 const Typography = dynamic(() => import("@mui/material/Typography"));
 
-function Messages({scrollContainerRef, messages, chat}) {
-    // const {inputFocused, text} = useContext(InputContext)
-    console.log("messages updated")
-    // const {messages, chat} = useContext(RootContext);
+export interface IMessagesProps {
+    scrollContainerRef: Ref<ReactNode>
+}
+
+function Messages({scrollContainerRef}) {
     const [currentUser] = useAuthState(auth);
+    const conversationLoading = useConversationState(state => state.loading);
+    const loading = useMessagesState(state => state.loading);
+    const messages = useMessagesState(state => state.state, shallow);
     const [loader, setLoader] = useState({loaded: false, height: null, scroll: null});
-    const onScroll = async (e) => {
-        console.log(e.target.scrollTop)
-        if (scrollContainerRef?.current && !loader.loaded && (e.target.scrollTop <= 100)) {
-            setLoader({
-                loaded: true,
-                height: scrollContainerRef?.current.scrollHeight,
-                scroll: scrollContainerRef?.current.scrollTop
-            })
-            messages.loadMore();
-        }
-        if (loader.loaded && (e.target.scrollTop > 100)) setLoader({loaded: false, height: null, scroll: null})
-    }
+    // const onScroll = async (e) => {
+    //     if (scrollContainerRef?.current && !loader.loaded && (e.target.scrollTop <= 100)) {
+    //         setLoader({
+    //             loaded: true,
+    //             height: scrollContainerRef?.current.scrollHeight,
+    //             scroll: scrollContainerRef?.current.scrollTop
+    //         })
+    //         // messages.loadMore();
+    //     }
+    //     if (loader.loaded && (e.target.scrollTop > 100)) setLoader({loaded: false, height: null, scroll: null})
+    // }
     useEffect(() => {
-        if (loader.loaded) {
-            // console.log((scrollContainerRef.current.scrollHeight - loader.height) + loader.scroll, loader.scroll, scrollContainerRef.current.scrollHeight, loader.height);
-            scrollContainerRef.current.scroll({
-                top: (scrollContainerRef.current?.scrollHeight - loader.height) + loader.scroll,
-                behavior: 'auto'
-            });
-        }
-    }, [messages.loading]);
+        console.count("updated messages")
+    })
+    // useEffect(() => {
+    //     if (loader.loaded) {
+    //         // console.log((scrollContainerRef.current.scrollHeight - loader.height) + loader.scroll, loader.scroll, scrollContainerRef.current.scrollHeight, loader.height);
+    //         scrollContainerRef.current.scroll({
+    //             top: (scrollContainerRef.current?.scrollHeight - loader.height) + loader.scroll,
+    //             behavior: 'auto'
+    //         });
+    //     }
+    // }, [loading]);
+    useEffect(() => {
+        console.log(messages)
+    }, [messages])
     return (
         <div className={"messages-container"} style={{
             padding: "0.5rem",
             paddingTop: "3rem",
             paddingBottom: "3rem",
             height: '100%',
-        }} onScroll={debounce(onScroll)} ref={scrollContainerRef}>
+        }} ref={scrollContainerRef}>
             <div style={{display: 'flex', flexDirection: "column"}}>
                 {
                     // @ts-ignore TODO Impure function,
-                    messages.data?.map((message, index) => {
+                    messages?.map((message, index) => {
                         // @ts-ignore
-                        const reply = message.replyingTo ? messages.data.find(doc => doc.id === message.replyingTo) : null;
+                        const reply = message.replyingTo ? messages.find(doc => doc.id === message.replyingTo) : null;
                         const replyingTo = message.replyingTo && reply ? reply : null;
                         return (
                             <Message
                                 key={message.id}
                                 replyingTo={replyingTo}
-                                continued={messages.data[index - 1] ? messages.data[index - 1].user === message.user : false}
+                                continued={messages[index - 1] ? messages[index - 1].user === message.user : false}
                                 message={message}
                                 currentUser={currentUser}
                             />
@@ -76,7 +85,7 @@ function Messages({scrollContainerRef, messages, chat}) {
                     })
                 }
             </div>
-            {(messages.loading && !chat.loading) && <Delayed waitBeforeShow={200}>
+            {(loading && !conversationLoading) && <Delayed waitBeforeShow={200}>
                 <div style={{
                     display: "flex",
                     minHeight: '100%',
@@ -88,8 +97,7 @@ function Messages({scrollContainerRef, messages, chat}) {
                     <CircularProgress/>
                 </div>
             </Delayed>}
-            {/* @ts-ignore */}
-            {(!messages.loading && !messages.data?.length && !chat.loading) ? (
+            {(!loading && !messages?.length && !conversationLoading) ? (
                 <Delayed waitBeforeShow={300}>
                     <div className={'no-messages-container'} style={{
                         display: "flex",
@@ -109,15 +117,8 @@ function Messages({scrollContainerRef, messages, chat}) {
             ) : null}
             {/* scroll target empty div @ts-ignore */}
             {<div className={'jimmy'} style={{height: "0rem", scrollSnapAlign: "center"}} id="jimmyjohnson"/>}
-            {/*<div style={{height: '100%', flex: 1, flexGrow: 1, marginTop: 'auto'}}/>*/}
         </div>
     )
 }
 
-
-function select() {
-    const {messages, chat} = useContext(RootContext);
-    return {messages: messages, chat}
-}
-
-export default connect(Messages, select);
+export default Messages;

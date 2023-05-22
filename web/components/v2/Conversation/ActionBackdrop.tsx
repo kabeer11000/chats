@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Delayed from "@/components/Delayed";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import {useActionBackdrop} from "../../zustand/Conversation";
+import {useActionBackdrop} from "@/zustand/v2/Conversation";
 // @ts-ignore
 const Backdrop = dynamic(() => import("@mui/material/Backdrop"));
 // @ts-ignore

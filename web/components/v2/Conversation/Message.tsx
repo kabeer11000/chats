@@ -2,7 +2,7 @@
 import {useAuthState} from 'react-firebase-hooks/auth';
 // @ts-ignore
 import {auth} from 'firebase-config';
-import {Fragment, memo, useCallback, useContext, useEffect, useState} from "react";
+import {Fragment, useCallback, useContext, useEffect, useState} from "react";
 // @ts-ignore
 import Linkify from '@kabeersnetwork/material-ui-linkify';
 // @ts-ignore
@@ -11,8 +11,7 @@ import {DrawerContext} from "root-contexts";
 import useTheme from "@mui/material/styles/useTheme";
 // @ts-ignore
 import dynamic from "next/dynamic";
-import {RootContext} from "./Context";
-import {connect} from "@/components/ConnectHOC";
+import {useInput} from "@/zustand/v2/Conversation";
 // @ts-ignore
 const VoiceMessage = dynamic(() => import("./VoiceMessage"));
 // @ts-ignore
@@ -34,15 +33,11 @@ const Typography = dynamic(() => import("@mui/material/Typography"));
 // @ts-ignore
 const Reply = dynamic(() => import("@mui/icons-material/Reply"));
 
-const Message = ({message, continued, replyingTo, currentUser, onReply}) => {
+const Message = ({message, continued, replyingTo, currentUser}) => {
     const [options, setOptions] = useState(false);
-    // useEffect(() =>
-    //     console.count(message.id + " message updated"))
-
-    // const {methods: {onReply}} = useContext(RootContext); // DeleteMessage,
     const theme = useTheme();
+    const onReply = useInput(state => state.setReply);
     const messageType = message.user === currentUser.email ? 'sender' : 'receiver';
-    // @ts-ignore
     const {isDesktop} = useContext(DrawerContext);
     const MessageOptionsSender = useCallback(() => <div
         style={{display: "flex", marginLeft: "1rem", marginRight: "1rem"}}>
@@ -64,7 +59,7 @@ const Message = ({message, continued, replyingTo, currentUser, onReply}) => {
         replied: false
     });
     useEffect(() => {
-        if (reply.message && !reply.dragging) onReply(reply.message).catch();
+        if (reply.message && !reply.dragging) onReply(reply.message);
     }, [reply]);
     const isImage = message?.files?.find(({type}) => type === "kn.chats.IMAGE");
     const isAudio = message?.files?.find(({type}) => type === "kn.chats.AUDIO");
@@ -195,7 +190,7 @@ const Message = ({message, continued, replyingTo, currentUser, onReply}) => {
                         // "&:hover": {backgroundColor: 'rgb(7, 177, 77, 0.42)'}
                     }} elevation={0}>
                         <Linkify
-                            properties={{target: '_blank', style: {color: "blue!important"}}}>
+                            LinkProps={{target: '_blank', style: {fontWeight: "bold"}}}>
                             <Typography
                                 style={{
                                     // filter: "brightness(2)",
@@ -215,11 +210,4 @@ const Message = ({message, continued, replyingTo, currentUser, onReply}) => {
         </div>
     );
 };
-
-function select() {
-    const {methods: {onReply}} = useContext(RootContext);
-    return {onReply}
-}
-
-// export default connect(memo(Messages), select);
-export default connect(memo(Message), select);
+export default (Message);

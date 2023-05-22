@@ -1,66 +1,76 @@
-// @ts-ignore
 import dynamic from "next/dynamic";
-import {Fragment, useContext, useEffect, useRef} from "react";
+import {createContext, Fragment, useCallback, useContext, useEffect, useRef} from "react";
 import {DrawerContext} from "root-contexts";
-import {CallProvider, RootContext} from "./Context";
-import {useTheme} from "@mui/material/styles";
+import {CallProvider} from "./Context";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import {connect} from "@/components/ConnectHOC";
 import {ThemeSchemeContext} from "@/styles/theme";
+import {useActionBackdrop, useConversationState, useInput} from "@/zustand/v2/Conversation";
+import shallow from "zustand/shallow";
+import {compressImage} from "@/utils/compression/image";
+import {useDropzone} from "react-dropzone";
 import {rgbToHex} from "@/utils/colored/colortheif";
+import {UploadFileToKCSBucket} from "@/3pa/kcs/files";
+import {useTheme} from "@mui/material/styles";
+import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
 
 const Messages = dynamic(() => import("./Messages"));
 const AudioMessageSheet = dynamic(() => import("./AudioMessageSheet"));
-// @ts-ignore
 const Skeleton = dynamic(() => import("@mui/material/Skeleton"));
-const Header = dynamic(() => import("./Header"), {
-    loading: loadingProps => <div/>//<Skeleton width={'100%'} style={{zIndex: 999, margin: 0, padding: 0}} height={'5rem'}/>
-});
 const Input = dynamic(() => import("./Input"));
-// @ts-ignore
-// const AppBar = dynamic(() => import("@mui/material/AppBar"));
-// @ts-ignore
-// const Avatar = dynamic(() => import("@mui/material/Avatar"));
-// @ts-ignore
 const Backdrop = dynamic(() => import("@mui/material/Backdrop"));
-// @ts-ignore
-const Box = dynamic(() => import("@mui/material/Box"));
-// @ts-ignore
-// const CircularProgress = dynamic(() => import("@mui/material/CircularProgress"));
-// @ts-ignore
-// const IconButton = dynamic(() => import("@mui/material/IconButton"));
-// @ts-ignore
-// const ListItemText = dynamic(() => import("@mui/material/ListItemText"));
-// @ts-ignore
 const Typography = dynamic(() => import("@mui/material/Typography"));
-// @ts-ignore
-// const Toolbar = dynamic(() => import("@mui/material/Toolbar"));
-// @ts-ignore
-// const ArrowBack = dynamic(() => import("@mui/icons-material/ArrowBack"));
-// @ts-ignore
 const Options = dynamic(() => import("./Options"));
+const Header = dynamic(() => import("./Header"), {
+    loading: () => <Skeleton width={'100%'} style={{zIndex: 999, margin: 0, padding: 0}} height={'5rem'}/>
+});
 
-const Conversation = ({Files, chat}) => {
-    // @ts-ignore
-    const {type: drawerType, drawerWidth, isDesktop} = useContext(DrawerContext);
-    // const {Files, chat} = useContext(RootContext);
+/** Dropzone Context **/
+export interface IDropZoneContext {
+    getRootProps: () => object,
+    getInputProps: () => object,
+    isDragActive: boolean
+}
+
+export const DropZoneContext = createContext<IDropZoneContext>({
+    getRootProps: () => undefined,
+    getInputProps: () => undefined,
+    isDragActive: false
+});
+export const DropZoneProvider = ({children}) => {
+    // Would stop un-needed triggers
+    const actionBackdrop = useActionBackdrop(state => ({
+        create: state.create,
+        destroy: state.destroy,
+        error: state.error
+    }), shallow);
+    const input = useInput(state => ({setFiles: state.setFiles, setText: state.setText}), shallow);
+    const onDrop = useCallback(async files => {
+        try {
+            const updatedFiles = [];
+            actionBackdrop.create();
+            for (const file of files) updatedFiles.push(await UploadFileToKCSBucket({
+                file: await compressImage(file),
+                actionBackdrop: false
+            }));
+            input.setFiles([...useInput.getState().state.files, ...updatedFiles]);
+            actionBackdrop.destroy();
+        } catch (e) {
+            actionBackdrop.error();
+        }
+    }, []);
+    const {getRootProps, getInputProps, isDragActive} = useDropzone({
+        // @ts-ignore
+        onDrop, accept: "image/*", noClick: true, multiple: false
+    });
+    return <DropZoneContext.Provider
+        value={{getRootProps, getInputProps, isDragActive}}>{children}</DropZoneContext.Provider>
+}
+const Conversation = () => {
     const scrollContainerRef = useRef();
     const matches = useMediaQuery('(min-width:800px)');
+    const {drawerWidth, isDesktop, type: drawerType} = useContext(DrawerContext);
     const theme = useTheme();
-    const {generateThemeScheme, setThemeScheme, themeScheme} = useContext(ThemeSchemeContext);
-    useEffect(() => {
-        if (chat.data?.background?.name && chat.data?.background.ambient?.main) {
-            // const colors = chat.data?.background.ambient?.main;
-            generateThemeScheme(rgbToHex(...chat.data?.background.ambient?.main));
-        } else setThemeScheme(JSON.parse(localStorage.getItem("theme-scheme-og")));
-    }, [chat.data?.background?.name, chat.data?.background?.ambient?.main]);
-    useEffect(() => {
-        const themeSchemeOg = themeScheme;
-        localStorage.setItem("theme-scheme-og", JSON.stringify(themeScheme));
-        return () => {
-            setThemeScheme(themeSchemeOg);
-        }
-    }, [])
     return (
         <Fragment>
             <div style={{
@@ -83,49 +93,63 @@ const Conversation = ({Files, chat}) => {
                         </div>
                     </CallProvider>
                     <div style={{flex: 1, position: 'relative', overflowX: 'hidden', overflowY: "scroll", flexGrow: 1}}>
-                        {/** in Working condition, for chat background feature **/}
-                        <div style={{
-                            overflow: 'hidden',
-                            zIndex: -1,
-                            position: 'absolute',
-                            height: '100%',
-                            width: '100%'
-                        }}>
-                            {
-                                (chat.data && chat.data?.background?.name) &&
-                                <img style={{
-                                    position: 'relative',
-                                    width: '150%',
-                                    height: '150%',
-                                    animation: 'fadein 1s',
-                                    filter: `blur(${chat.data.background.blur ? '20' : '0'}px) brightness(${theme.palette.mode === "dark" ? .3 : 1.1})`
-                                }}
-                                     src={`https://docs.cloud.kabeers.network/static/chats/backgrounds/images/${chat.data.background.name}`}/>
-                            }
-                        </div>
                         <Messages scrollContainerRef={scrollContainerRef}/>
+                        <DynamicBackground/>
                     </div>
-                    <div style={{marginTop: "auto"}}><Input/></div>
+                    <div style={{marginTop: "auto"}}>
+                        <Input/>
+                    </div>
                 </div>
-                {/*<Divider variant={'fullWidth'} orientation={'vertical'}/>*/}
-                {(matches) && <div style={{flex: 1, maxWidth: drawerWidth, height: 'auto'}}>
-                    <div style={{marginTop: '3rem'}}><Options/></div>
-                </div>}
+                {(matches) && <Box sx={{
+                    backgroundColor: theme.palette.background.default
+                }} style={{flex: 1,borderRadius:0, maxWidth: drawerWidth, height: 'auto'}}>
+                    <div style={{marginTop: '3rem'}}><Options embedded={false}/></div>
+                </Box>}
             </div>
             <AudioMessageSheet/>
-            <Backdrop style={{marginLeft: isDesktop ? `calc(100% - ${drawerWidth})` : 0}}
-                      open={Files.Dropzone.isDragActive}>
-                <Typography>Drop Files Here</Typography>
-            </Backdrop>
+            <BackdropComponent/>
         </Fragment>
     );
 };
+const DynamicBackground = () => {
+    const conversationBackground = useConversationState(state => state.state?.background);
+    const {generateThemeScheme, setThemeScheme, themeScheme} = useContext(ThemeSchemeContext);
+    const theme = useTheme();
+    useEffect(() => {
+        if (conversationBackground?.name && !!conversationBackground.ambient?.main) {
+            generateThemeScheme(rgbToHex(...conversationBackground.ambient?.main));
+        } else setThemeScheme(JSON.parse(localStorage.getItem("theme-scheme-og")));
+    }, [conversationBackground?.name, conversationBackground?.ambient?.main]);
+    useEffect(() => {
+        const themeSchemeOg = themeScheme;
+        localStorage.setItem("theme-scheme-og", JSON.stringify(themeScheme));
+        return () => setThemeScheme(themeSchemeOg);
+    }, []);
+    return (
+        (conversationBackground?.name) && <div style={{
+            overflow: 'hidden',
+            zIndex: -1,
+            top: 0,
+            position: 'fixed',
+            // backgroundColor: "black",
+            height: '100vh',
+            width: '100vw',
 
+            animation: 'fadein 1s',
+            filter: `blur(${conversationBackground.blur ? '20' : '0'}px) brightness(${theme.palette.mode === "dark" ? .3 : 1.1})`,
+            background: `url('https://docs.cloud.kabeers.network/static/chats/backgrounds/images/${conversationBackground.name}')`
 
-function select() {
-    const {Files, chat} = useContext(RootContext);
-    return {Files, chat};
+        }}/>
+    )
 }
-
-export default connect(Conversation, select);
-// export default (Conversation);
+const BackdropComponent = () => {
+    const {isDragActive} = useContext(DropZoneContext);
+    const {drawerWidth, isDesktop} = useContext(DrawerContext);
+    return (
+        <Backdrop style={{marginLeft: isDesktop ? `calc(100% - ${drawerWidth})` : 0}}
+                  open={isDragActive}>
+            <Typography>Drop Files Here</Typography>
+        </Backdrop>
+    )
+}
+export default ({props}) => <DropZoneProvider><Conversation {...props}/></DropZoneProvider>;
