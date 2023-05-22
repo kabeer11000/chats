@@ -9,6 +9,14 @@ import {getAudioContext} from "./utils/audio";
 import {useConfirm} from "material-ui-confirm";
 import {useConversations} from "./zustand/Home";
 
+export interface IDrawerContext {
+    type: "permanent" | "temporary",
+    isDesktop: matches,
+    createGCDialog: {open: cgcd, toggle: () => scgcd(!cgcd)},
+    drawerWidth: drawerWidth,
+    setDrawerWidth,
+    toggle: (a) =>
+}
 export const DrawerContext = createContext({
     mobileOpen: false,
     isDesktop: true
