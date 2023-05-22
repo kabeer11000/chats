@@ -16,17 +16,17 @@ const Conversation = dynamic(() => import("@/components/v2/Conversation/Conversa
 // export const getServerSideProps = async ({params}) => {
 //     return ({props: {exists: true /*(await db.collection("chats").doc(params.id).get()).exists */}});
 // }
-export default function Chat({exists}) {
+export default function Chat() {
     const router = useRouter();
     const [subscribeToMessages, unSubscribeToMessages] = useMessagesState(state => [state.subscribe, state.unsubscribe], shallow);
     const [user] = useAuthState(auth);
     useEffect(() => {
         analytics().setCurrentScreen("kn.chats.pages.chat");
-        if (!router.query.id) return;
-        if (!exists) {
-            router.push("/").then();
-            return;
-        }
+        if (!router.query.id || !router.isReady) return;
+        // if (!exists) {
+        //     router.push("/").then();
+        //     return;
+        // }
         useConversationState.getState().subscribe(router.query.id.toString(), user);
         subscribeToMessages(router.query.id.toString())
         return () => {
@@ -34,7 +34,7 @@ export default function Chat({exists}) {
             useConversationState.getState().unsubscribeToMemberData();
             unSubscribeToMessages();
         }
-    }, [router.query.id]);
+    }, [router.query.id, router.isReady]);
     return (
         <Conversation props={undefined}/>
     );
