@@ -8,16 +8,18 @@ import "firebase/firestore";
 import {getAudioContext} from "./utils/audio";
 import {useConfirm} from "material-ui-confirm";
 import {useConversations} from "./zustand/Home";
+import {TextField} from "@mui/material";
 
 export interface IDrawerContext {
     mobileOpen: boolean,
     type: "permanent" | "temporary",
     isDesktop: boolean,
-    createGCDialog: {open: boolean, toggle: () => any},
+    createGCDialog: { open: boolean, toggle: () => any },
     drawerWidth: number,
     setDrawerWidth: (width: number) => any,
     toggle: (a: undefined | boolean) => any
 }
+
 export const DrawerContext = createContext<IDrawerContext>({
     mobileOpen: false,
     isDesktop: true,
@@ -69,7 +71,16 @@ export const ChatProvider = ({children}) => {
     const [user] = useAuthState(auth);
     const confirm = useConfirm();
     const createChat = async (input, {isGc} = {isGc: false}) => {
-        if (!input) input = prompt(isGc ? 'Enter space seperated email addresses of new chat recipients' : 'Enter recipients email address');
+        if (!input) await confirm({
+            title: `Create new ${isGc ? 'group chat' : 'conversation'}`,
+            description: <div>
+                <TextField
+                    fullWidth variant={"filled"}
+                    helperText={isGc ? 'Enter space seperated email addresses of new chat recipients' : 'Enter recipients email address'}
+                    placeholder={isGc ? "example@domain.com, ".repeat(2) : "example@domain.com"} onChange={(e) => input = (e.target.value)}/>
+            </div>,
+            confirmationText: "Create"
+        }).catch(() => input = (''));
         if (!input?.trim()) return null;
         input = input.trim().toLowerCase();
         const conversations = useConversations.getState().conversations;
@@ -104,7 +115,7 @@ export const ChatProvider = ({children}) => {
         </ChatContext.Provider>
     )
 }
-export const ActiveContext = createContext<{active: boolean, visible: boolean, isDev: boolean}>({
+export const ActiveContext = createContext<{ active: boolean, visible: boolean, isDev: boolean }>({
     active: true,
     visible: true,
     isDev: false

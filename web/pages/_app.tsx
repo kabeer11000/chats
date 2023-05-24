@@ -7,7 +7,7 @@ import firebase from 'firebase/app';
 import "firebase/firestore";
 // import 'react-virtualized/styles.css'; // only needs to be imported once
 import {analytics, auth, db} from 'firebase-config';
-import {ActiveContext, CapabilitiesProvider, DrawerContext, DrawerProvider} from "../Contexts";
+import {ActiveContext, CapabilitiesProvider, ChatProvider, DrawerContext, DrawerProvider} from "../Contexts";
 import {v4} from "uuid";
 import {registerNotifications} from "@/utils/notifications";
 // import serviceWorker from "../worker";
@@ -210,21 +210,23 @@ export default function App({Component, pageProps}) {
                                         {/* @ts-ignore */}
                                         <ActiveContext.Provider value={{visible: true, active: true, isDev: isDev}}>
                                             <CapabilitiesProvider>
-                                                <SideBar/>
-                                                <div style={{
-                                                    display: 'flex', position: 'relative',
-                                                    flexDirection: 'column', scrollSnapType: "y mandatory",
-                                                    height: '100%', maxHeight: '100vh'
-                                                }}>
-                                                    <div style={{height: "0rem", scrollSnapAlign: "start"}}/>
-                                                    <Suspense fallback={'loading...'}>
-                                                        <Component {...pageProps} />
-                                                    </Suspense>
-                                                    <VirtualKeyBoardDEV isDev={isDev}/>
-                                                    <OfflinePrompt/>
-                                                    {(['/home', '/', '/feed', '/profile'].includes(router.pathname)) &&
-                                                        <DynamicSidebarContent><ChatsBottomNavigation/></DynamicSidebarContent>}
-                                                </div>
+                                                <ChatProvider>
+                                                    <SideBar/>
+                                                    <div style={{
+                                                        display: 'flex', position: 'relative',
+                                                        flexDirection: 'column', scrollSnapType: "y mandatory",
+                                                        height: '100%', maxHeight: '100vh'
+                                                    }}>
+                                                        <div style={{height: "0rem", scrollSnapAlign: "start"}}/>
+                                                        <Suspense fallback={'loading...'}>
+                                                            <Component {...pageProps} />
+                                                        </Suspense>
+                                                        <VirtualKeyBoardDEV isDev={isDev}/>
+                                                        <OfflinePrompt/>
+                                                        {(['/home', '/', '/feed', '/profile'].includes(router.pathname)) &&
+                                                            <DynamicSidebarContent><ChatsBottomNavigation/></DynamicSidebarContent>}
+                                                    </div>
+                                                </ChatProvider>
                                             </CapabilitiesProvider>
                                         </ActiveContext.Provider>
                                     </ConversationsProvider>
