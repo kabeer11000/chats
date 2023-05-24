@@ -6,5 +6,5 @@ if [ $# -eq 0 ]
     a=$(openssl rand -hex 12)
 fi
 #if [[ $b -eq 5 ]]; then a="$c"; else a="$d"; fi
-git commit -m "$a"
+git commit -m "$a - Via: Auto Commit & Push Script | scripts/git/dev/commit.sh"
 git push origin development
