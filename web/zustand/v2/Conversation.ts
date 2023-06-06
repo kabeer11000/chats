@@ -1,6 +1,6 @@
 import create from "zustand";
 import {v4} from "uuid";
-import {db} from "firebase-config";
+import {auth, db} from "firebase-config";
 import {converter} from "@/components/v2/Conversation/utils";
 import {IConversation, IMessageWithConverter, IUser} from "../../types/Conversation";
 
@@ -121,14 +121,17 @@ export const useConversationState = create<IUseConversationState>((set, get) => 
                 ...prevState.I,
                 memberDataSnapshotListener: db.collection("users").where("email", "in", users).withConverter(converter)
                     .onSnapshot({includeMetadataChanges: true}, (snapshot) => {
-                        if (!snapshot.metadata.hasPendingWrites) set(({
-                            members: snapshot.docs.map(document => document.data()),
-                            membersLoading: false
-                        }));
+                        if (!snapshot.metadata.hasPendingWrites) {
+                            set({
+                                members: snapshot.docs.map(document => document.data()),
+                                membersLoading: false
+                            });
+                        }
                     })
             }
         }))
     },
+    pushMessageLocally: () => {},
     subscribe: (id: string, user: IUser) => set(prevState => ({
         ...prevState,
         loading: true,
@@ -192,10 +195,17 @@ export const useMessagesState = create<IUseMessagesState>((set, get) => ({
                     .withConverter(converter)
                     .onSnapshot({includeMetadataChanges: true}, (snapshot) => {
                         console.log("Got Messages: ", snapshot.docs.length);
-                        if (!snapshot.metadata.hasPendingWrites) set({
-                            state: snapshot.docs.map(document => document.data()),
-                            loading: false
-                        })
+                        if (!snapshot.metadata.hasPendingWrites) {
+                            const update = [...snapshot.docChanges()].slice(-1).reduce((update, change) => {
+                                console.log(change.doc.data())
+                                return !!(!prevState.loading && update && (change.type === "added") && ((change.doc.data() as IMessageWithConverter).user !== auth.currentUser.email))
+                            });
+                            console.log("update: ", update)
+                            if (update) set({
+                                state: snapshot.docs.map(document => document.data()),
+                                loading: false
+                            })
+                        }
                     })
             }
         }))

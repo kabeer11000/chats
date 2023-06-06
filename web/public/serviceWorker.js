@@ -4,7 +4,7 @@ const _isLocalhost = () => {
     if (h.split(":")[0] === 'localhost') return true;
     else if (h.slice(0, '192.168'.length) === '192.168') return true;
 }
-const isLocalhost = false // _isLocalhost(); // self.location.host.split(":")[0] === "localhost";
+const isLocalhost = true // _isLocalhost(); // self.location.host.split(":")[0] === "localhost";
 importScripts("/binaries/svg2png-wasm@1.3.4/dist/index.min.js");
 const NotificationTypes = {
     "Conversation.Message": "kn.chats.conversation.text.notification",

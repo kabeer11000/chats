@@ -98,13 +98,16 @@ export const ChatProvider = ({children}) => {
             });
             for (const email of [...new Set(input.split(" "))]) await fetch(`/api/send-mail?guest=${email}&u=${user.email}`);
             return ref;
-        } else if (EmailValidator.validate(input) && input !== user.email && !isExistingChat(input)) {
-            const ref = await db.collection('chats').add({
-                users: [user.email, input],
-                lastSent: firebase.firestore.FieldValue.serverTimestamp(),
-            });
-            await fetch(`/api/send-mail?guest=${input}&u=${user.email}`)
-            return ref;
+        } else {
+            if (!EmailValidator.validate(input)) return confirm({title: "Invalid Email: " + input});
+            if (!isExistingChat(input)) {
+                const ref = await db.collection('chats').add({
+                    users: [user.email, input],
+                    lastSent: firebase.firestore.FieldValue.serverTimestamp(),
+                });
+                await fetch(`/api/send-mail?guest=${input}&u=${user.email}`)
+                return ref;
+            }
         }
     };
     return (

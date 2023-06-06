@@ -84,9 +84,13 @@ function ResponsiveDrawer() {
                                       }}>Signed in as {auth.currentUser.email}</div>}/>
                     </ListItemButton>
                     <div>
-                        <IconButton onClick={async () => {
-                            confirm({title: 'Sign Out', description: 'Signing out will remove your account and all associated data with this device', confirmationText: 'Sign Out'}).then(() => auth.signOut().then(() => router.push("/"))).catch()
-                        }} variant={'contained'}><Logout/></IconButton>
+                        <IconButton onClick={() => confirm({
+                            title: 'Sign Out',
+                            description: 'Signing out will remove your account and all associated data with this device',
+                            confirmationText: 'Sign Out'
+                        }).then(() => auth.signOut().then(() => router.push("/"))).catch()} variant={'contained'}>
+                            <Logout/>
+                        </IconButton>
                     </div>
                 </ListItem>
                 <ListItem onClick={() => setQrCodeOpen(true)}>
@@ -115,9 +119,8 @@ function ResponsiveDrawer() {
                     </ListItemButton>
                 </ListItem>
                 <ListItem>
-                    <ListItemButton onClick={() => generateThemeScheme("#000000".replace(/0/g, function () {
-                        return (~~(Math.random() * 16)).toString(16);
-                    }))}>
+                    <ListItemButton
+                        onClick={() => generateThemeScheme("#000000".replace(/0/g, () => (~~(Math.random() * 16))).toString(16))}>
                         <ListItemIcon>
                             <ColorLensOutlined/>
                         </ListItemIcon>
@@ -168,7 +171,13 @@ function ResponsiveDrawer() {
     //     // setDrawerWidth(target.clientWidth);
     // }//, []);
     useEffect(() => {
-        if (qrCodeScanner) confirm({title: "Unstable Feature", hideCancelButton: true, cancellationButtonProps: {style: {display: 'none'}}, confirmationText: "Got it", description: "This Feature is in early development and not tested. \n it may be unstable and buggy"});
+        if (qrCodeScanner) confirm({
+            title: "Unstable Feature",
+            hideCancelButton: true,
+            cancellationButtonProps: {style: {display: 'none'}},
+            confirmationText: "Got it",
+            description: "This Feature is in early development and not tested. \n it may be unstable and buggy"
+        });
     }, [qrCodeScanner]);
     return (
         <Fragment>
@@ -248,8 +257,17 @@ function ResponsiveDrawer() {
                                 {!email && <QrReader
                                     delay={100}
                                     constraints={{video: {facingMode: 'environment'}}}
-                                    style={{width: "100%", minWidth: "100vw", marginTop: "-2rem", height: "100vh", padding: 0, margin: 0, objectFit: "cover"}}
-                                    onError={() => {}}
+                                    style={{
+                                        width: "100%",
+                                        minWidth: "100vw",
+                                        marginTop: "-2rem",
+                                        height: "100vh",
+                                        padding: 0,
+                                        margin: 0,
+                                        objectFit: "cover"
+                                    }}
+                                    onError={() => {
+                                    }}
                                     onScan={setEmail}
                                 />}</ButtonBase>
                             <Fullscreen style={{
