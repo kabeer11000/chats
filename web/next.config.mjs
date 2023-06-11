@@ -1,7 +1,10 @@
-module.exports = ({
+import million from 'million/compiler'
+export default million.next({
     swcMinify: true,
     reactStrictMode: false,
     poweredByHeader: false,
+
+    optimize: true,
     typescript: {
         ignoreBuildErrors: true
     },

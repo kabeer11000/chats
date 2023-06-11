@@ -30,6 +30,7 @@
     "firebase": "8.7.1",
     "material-dynamic-colors": "^0.0.10",
     "material-ui-confirm": "^3.0.7",
+    "million": "^2.4.4",
     "moment": "^2.29.1",
     "next": "^13.0.0",
     "nextjs-progressbar": "^0.0.14",
