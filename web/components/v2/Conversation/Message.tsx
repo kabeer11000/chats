@@ -108,7 +108,6 @@ const Message = ({message, continued, replyingTo, currentUser}) => {
                         maxWidth: isDesktop ? "60%" : "80%",
                         flexDirection: "column",
                         display: "flex",
-                        transitionDuration: "0.1s"
                     }}>
                     <div className={"reply"} style={{position: "relative"}}>
                         {replyingTo ? <div style={{
