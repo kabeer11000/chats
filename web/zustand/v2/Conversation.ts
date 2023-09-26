@@ -1,4 +1,4 @@
-import create from "zustand";
+import {create} from "zustand";
 import {v4} from "uuid";
 import {auth, db} from "firebase-config";
 import {converter} from "@/components/v2/Conversation/utils";

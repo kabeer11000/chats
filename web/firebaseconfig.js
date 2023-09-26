@@ -4,7 +4,7 @@ import 'firebase/firestore';
 import 'firebase/analytics';
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: "AIzaSyAAnlbwVYo_GswUhZ2fgGySSiN0d8W2bys",
+    apiKey: process.env.FIREBASE_API_KEY,
     authDomain: "kabeer-chats.firebaseapp.com",
     projectId: "kabeer-chats",
     storageBucket: "kabeer-chats.appspot.com",

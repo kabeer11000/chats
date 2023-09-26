@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "NODE_ENV=development next dev",
+    "generate-asset-manifest": "node ./generate-asset-manifest.js",
+    "build-with-env": "FIREBASE_API_KEY=$(cat .env | grep -e FIREBASE_API_KEY= | cut -c 18-) next build",
     "build": "next build",
-    "_build": "node ./generate-asset-manifest.js",
     "export": "next export",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.1.2",
@@ -23,6 +25,7 @@
     "@splidejs/splide": "^4.1.4",
     "@splidejs/splide-extension-auto-scroll": "^0.5.3",
     "colorthief": "^2.4.0",
+    "dotenv": "^16.3.1",
     "email-validator": "^2.0.4",
     "emoji-mart": "^5.5.2",
     "emoji-picker-react": "^4.4.9",
