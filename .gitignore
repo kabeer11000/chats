@@ -1,5 +1,9 @@
 **/.DS_Store
 .ignored/
 credentials/live
-deployment/
+deployment/ssl
 **/.env
+credentials/client_secret.json
+credentials/kabeer-chats.json
+credentials/sendgrid.json
+credentials/vapid.json
