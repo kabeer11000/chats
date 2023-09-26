@@ -23,7 +23,7 @@ export const registerNotifications = async (registration, user) => {
     if (!registration.active || !('pushManager' in registration) || !("Notification" in window)) return console.log("failed to register notifications");
     const subscription = (await registration.pushManager.getSubscription()) ?? (await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(process.env.VAPID_PUBLIC_KEY)
+        applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY)
     }));
     localStorage.setItem("push.subscription", JSON.stringify(subscription.toJSON()));
     const batch = db.batch();
