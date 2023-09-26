@@ -1,5 +1,5 @@
 **/.DS_Store
 .ignored/
-credentials/
+credentials/live
 deployment/
 **/.env
