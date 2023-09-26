@@ -2,9 +2,10 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
 import 'firebase/analytics';
+require("dotenv").config({})
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-    apiKey: process.env.FIREBASE_API_KEY,
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     authDomain: "kabeer-chats.firebaseapp.com",
     projectId: "kabeer-chats",
     storageBucket: "kabeer-chats.appspot.com",
