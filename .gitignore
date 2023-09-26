@@ -3,3 +3,7 @@
 credentials/live
 deployment/ssl
 **/.env
+credentials/client_secret.json
+credentials/kabeer-chats.json
+credentials/sendgrid.json
+credentials/vapid.json
