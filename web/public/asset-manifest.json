@@ -1,6 +1,17 @@
 {
   "cache": {
     "version": "v2",
-    "files": ["/", "https://cdn.glitch.global/77b4c993-589e-4e39-8500-f03fc9765209/5c2f93a6-9329-426a-806b-587ddcf6a517.notification-badge.png?v=1663437251523", ",/images/icon-512-maskable.png", "/images/icon-512.png", "/favicon.ico", "/images/broken-image.jpeg", "/_offline", "/binaries/svg2png_wasm_bg.wasm", "https://unpkg.com/svg2png-wasm@1.3.4/dist/index.min.js", "https://cdn.glitch.global/77b4c993-589e-4e39-8500-f03fc9765209/5c2f93a6-9329-426a-806b-587ddcf6a517.notification-badge.png?v=1663437251523"]
+    "files": [
+      "/",
+      "https://cdn.glitch.global/77b4c993-589e-4e39-8500-f03fc9765209/5c2f93a6-9329-426a-806b-587ddcf6a517.notification-badge.png?v=1663437251523",
+      ",/images/icon-512-maskable.png",
+      "/images/icon-512.png",
+      "/favicon.ico",
+      "/images/broken-image.jpeg",
+      "/_offline",
+      "/binaries/svg2png_wasm_bg.wasm",
+      "https://unpkg.com/svg2png-wasm@1.3.4/dist/index.min.js",
+      "https://cdn.glitch.global/77b4c993-589e-4e39-8500-f03fc9765209/5c2f93a6-9329-426a-806b-587ddcf6a517.notification-badge.png?v=1663437251523"
+    ]
   }
 }

@@ -4,7 +4,6 @@ import DynamicSidebarContent from "@/styles/containers/DynamicSidebarContent";
 import {useAuthState} from "react-firebase-hooks/auth";
 import {auth, db} from "firebase-config";
 import {useCollectionData, useDocumentData} from "react-firebase-hooks/firestore";
-import {converter} from "@/components/Conversation/Context";
 import {Avatar, CircularProgress, ListItemText} from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import {CallEnd, Mic, VolumeUp} from "@mui/icons-material";
@@ -15,6 +14,7 @@ import {CreatePeer} from "@/rtc/v1";
 import md5 from "@/utils/md5";
 import Head from "next/head";
 import Typography from "@mui/material/Typography";
+import {converter} from "@/components/v2/Conversation/utils";
 
 function randomNumber(min, max) {
     return Math.random() * (max - min) + min;

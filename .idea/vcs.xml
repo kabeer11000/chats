@@ -2,12 +2,7 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/native/kabeer-chats" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/native/source-web" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/native/web-stable" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/native/web-stable/kabeer-chats" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/next/theme" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/push" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/wildflower/mediasoup-demo" vcs="Git" />
   </component>
 </project>

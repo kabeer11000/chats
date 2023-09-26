@@ -21,10 +21,13 @@
     "paths": {
       "@/components/*": ["components/*"],
       "@/utils/*": ["utils/*"],
+      "@/hooks/*": ["hooks/*"],
+      "@/zustand/*": ["zustand/*"],
       "@/rtc/*": ["rtc/*"],
+      "@/3pa/kcs/*": ["thirdparty/kcs/*"],
       "@/styles/*": ["styles/*"],
       "firebase-config": ["firebaseconfig.js"],
-      "root-contexts": ["Contexts.js"]
+      "root-contexts": ["Contexts.tsx"]
     }
   },
   "include": [

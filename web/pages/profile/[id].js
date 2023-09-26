@@ -2,11 +2,11 @@ import {db} from "../../firebaseconfig";
 import {Avatar, Box, Button, Container, List, ListItem, ListItemText, Typography} from "@mui/material";
 import Header from "../../components/Header";
 import {useContext} from "react";
-import {ChatContext, DrawerContext} from "../../Contexts";
+import {ChatContext, DrawerContext} from "root-contexts";
 import TimeAgo from "timeago-react"
 import {useDocumentData} from "react-firebase-hooks/firestore";
-import {converter} from "../../components/Conversation/Context";
 import {useRouter} from "next/router";
+import {converter} from "../../components/v2/Conversation/utils";
 
 export default function Profile() {
     const router = useRouter();

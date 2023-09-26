@@ -1,8 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import SendGrid from "../../creds/sendgrid.json";
 
 const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey(SendGrid["newAPIKey"]);
+sgMail.setApiKey(process.env.SENDGRID_newAPIKey);
 
 async function _(req, res) {
     //
@@ -21,9 +20,9 @@ export default async (req, res) => {
     const msg = {
         to: req.query.guest, //[req.query.guest, req.query.u].join(", "), // Change to your recipient
         cc: req.query.u,
-        from: 'Kabeer Chats <chats-no-reply@kabeersnetwork.tk>', // Change to your verified sender
+        from: 'Kabeer Chats <chats-no-reply@kabeers.network>', // Change to your verified sender
         subject: req.query.u + " Added you to a new chat!",
-        html: req.query.u + " Added you to a new chat!, Reply at <a href=\"https://chats.kabeersnetwork.tk\">chats.kabeersnetwork.tk</a>",
+        html: req.query.u + " Added you to a new chat!, Reply at <a href=\"https://chats.kabeers.network\">chats.kabeers.network</a>",
     }
     sgMail
         .send(msg)

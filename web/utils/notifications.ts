@@ -1,4 +1,3 @@
-import vapid from "../creds/vapid.json";
 import {db} from "firebase-config";
 
 export function urlBase64ToUint8Array(base64String) {
@@ -24,7 +23,7 @@ export const registerNotifications = async (registration, user) => {
     if (!registration.active || !('pushManager' in registration) || !("Notification" in window)) return console.log("failed to register notifications");
     const subscription = (await registration.pushManager.getSubscription()) ?? (await registration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapid.public_key)
+        applicationServerKey: urlBase64ToUint8Array(process.env.VAPID_PUBLIC_KEY)
     }));
     localStorage.setItem("push.subscription", JSON.stringify(subscription.toJSON()));
     const batch = db.batch();

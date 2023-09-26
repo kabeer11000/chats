@@ -4,8 +4,11 @@ const app = express();
 const cors = require("cors");
 app.use(express.json({inflate: true}));
 app.use(cors());
-const vapidKeys = require("./vapid.json");
-webpush.setVapidDetails('mailto:support@kabeersnetwork.tk', vapidKeys.public_key, vapidKeys.private_key);
+webpush.setVapidDetails(
+    'mailto:' + process.env.SUPPORT_EMAIL,
+    process.env.VAPID_PUBLIC_KEY,
+    process.env.VAPID_PRIVATE_KEY
+);
 
 app.post("/send-notification", async (req, res) => {
     try {
