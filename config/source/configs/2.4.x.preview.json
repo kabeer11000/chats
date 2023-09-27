@@ -1,0 +1,14 @@
+{
+    "web": {
+        "services": {
+            "push.v2": {},
+            "rtc": {
+                "version_code": "v2"
+            },
+            "storage": {
+                "version_code": "v1",
+                "host": {}
+            }
+        }
+    }
+}

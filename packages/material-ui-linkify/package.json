@@ -1,0 +1,65 @@
+{
+  "name": "@kabeersnetwork/material-ui-linkify",
+  "version": "3.0.0",
+  "description": "Converts links in text to Material-UI Links using the Markdown Linkify library",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "webpack-dev-server --config webpack.config.dev.ts --hot --progress --mode development",
+    "build": "npm run build:types && npm run build:webpack",
+    "build:webpack": "webpack --config webpack.config.build.ts --progress --mode production",
+    "build:types": "tsc --emitDeclarationOnly --outFile dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kabeer11000/chats"
+  },
+  "keywords": [
+    "material",
+    "react",
+    "linkify"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/alexplumb/material-ui-linkify/issues"
+  },
+  "homepage": "https://github.com/alexplumb/material-ui-linkify",
+  "sideEffects": true,
+  "devDependencies": {
+    "@babel/core": "^7.15.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.14.7",
+    "@babel/preset-env": "^7.15.0",
+    "@babel/preset-react": "^7.14.5",
+    "@babel/preset-typescript": "^7.15.0",
+    "@types/node": "^16.7.1",
+    "@types/react-dom": "^17.0.9",
+    "@types/tapable": "^2.2.2",
+    "@types/tlds": "^1.207.0",
+    "@types/webpack": "^5.28.0",
+    "@types/webpack-env": "^1.16.2",
+    "@types/webpack-merge": "^4.1.5",
+    "babel-loader": "^8.2.2",
+    "react-hot-loader": "^4.13.0",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.3.5",
+    "webpack": "^5.51.1",
+    "webpack-cli": "^4.8.0",
+    "webpack-dev-server": "^4.0.0",
+    "webpack-merge": "^5.8.0"
+  },
+  "dependencies": {
+    "@types/linkify-it": "^3.0.2",
+    "@types/react": "^17.0.52",
+    "linkify-it": "^3.0.2",
+    "prop-types": "^15.7.2",
+    "tlds": "^1.233.0"
+  },
+  "peerDependencies": {
+    "@emotion/react": "^11.4.1",
+    "@emotion/styled": "^11.3.0",
+    "@mui/material": "^5.0.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  }
+}
